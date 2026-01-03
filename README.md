@@ -1,9 +1,6 @@
-# My Dotfiles — Modern macOS Development Environment
+# My Dotfiles
 
-A lightweight, fast, and ergonomic development setup for macOS.
-Built around modern CLI tools, clear workflows, and productivity-focused defaults — without unnecessary bloat.
-
-![Terminal Preview](https://raw.githubusercontent.com/starship/starship/master/media/demo.gif)
+A lightweight setup for macOS. A work in progress and mostly for my benefit...
 
 ---
 

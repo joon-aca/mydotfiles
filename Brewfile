@@ -1,133 +1,55 @@
-tap "adoptopenjdk/openjdk"
-tap "gcenx/wine"
-tap "homebrew/services"
-tap "kegworks-app/kegworks"
-tap "mongodb/brew"
-tap "ngrok/ngrok"
-brew "libtiff"
-brew "webp"
-brew "jpeg-xl"
-brew "aom"
-brew "boost"
-brew "glib"
-brew "cmake"
-brew "cocoapods"
-brew "coreutils"
-brew "curl"
-brew "folly"
-brew "fizz"
-brew "wangle"
-brew "fbthrift"
-brew "fb303"
-brew "edencommon"
-brew "p11-kit"
-brew "unbound"
-brew "gnutls"
-brew "emacs"
-brew "f3"
-brew "harfbuzz"
-brew "openjpeg"
-brew "leptonica"
-brew "libass"
-brew "libmicrohttpd"
-brew "librist"
-brew "pango"
-brew "tesseract"
-brew "ffmpeg"
-brew "freetds"
-brew "libavif"
-brew "gd"
-brew "gemini-cli"
-brew "gh"
-brew "guile"
-brew "imagemagick"
-brew "jq"
-brew "libfido2"
-brew "protobuf"
-brew "mysql"
-brew "nvm"
-brew "openvino"
-brew "php", restart_service: :changed
-brew "pipx"
-brew "postgresql@14"
-brew "redis", restart_service: :changed
-brew "rust"
-brew "scrcpy"
-brew "telnet"
-brew "watchman"
-brew "wget"
-brew "yarn"
-brew "zsh-autosuggestions"
-brew "zsh-syntax-highlighting"
-brew "mongodb/brew/mongodb-community"
-cask "android-platform-tools"
-cask "kegworks"
-cask "ngrok"
-cask "swiftbar"
-cask "temurin"
-vscode "aaron-bond.better-comments"
-vscode "bierner.markdown-preview-github-styles"
-vscode "darkriszty.markdown-table-prettify"
-vscode "davidanson.vscode-markdownlint"
-vscode "dbaeumer.vscode-eslint"
-vscode "docker.docker"
-vscode "github.codespaces"
-vscode "github.copilot"
-vscode "github.copilot-chat"
-vscode "github.vscode-pull-request-github"
-vscode "joshpeng.sublime-babel-vscode"
-vscode "juanblanco.solidity"
-vscode "jumpinjackie.vscode-map-preview"
-vscode "kevinrose.vsc-python-indent"
-vscode "lfs.vscode-emacs-friendly"
-vscode "marp-team.marp-vscode"
-vscode "mathiasfrohlich.kotlin"
-vscode "mechatroner.rainbow-csv"
-vscode "mgesbert.python-path"
-vscode "mrmlnc.vscode-duplicate"
-vscode "ms-azuretools.vscode-containers"
-vscode "ms-azuretools.vscode-docker"
-vscode "ms-python.anaconda-extension-pack"
-vscode "ms-python.black-formatter"
-vscode "ms-python.debugpy"
-vscode "ms-python.isort"
-vscode "ms-python.python"
-vscode "ms-python.vscode-pylance"
-vscode "ms-python.vscode-python-envs"
-vscode "ms-toolsai.jupyter"
-vscode "ms-toolsai.jupyter-keymap"
-vscode "ms-toolsai.jupyter-renderers"
-vscode "ms-toolsai.vscode-jupyter-cell-tags"
-vscode "ms-toolsai.vscode-jupyter-slideshow"
-vscode "ms-vscode-remote.remote-containers"
-vscode "ms-vscode.cmake-tools"
-vscode "ms-vscode.cpptools"
-vscode "ms-vscode.cpptools-extension-pack"
-vscode "ms-vscode.cpptools-themes"
-vscode "ms-vscode.makefile-tools"
-vscode "ms-vscode.powershell"
-vscode "ms-vsliveshare.vsliveshare"
-vscode "msjsdiag.vscode-react-native"
-vscode "njpwerner.autodocstring"
-vscode "pepri.subtitles-editor"
-vscode "randomfractalsinc.geo-data-viewer"
-vscode "redhat.java"
-vscode "redhat.vscode-commons"
-vscode "redhat.vscode-xml"
-vscode "redhat.vscode-yaml"
-vscode "ritwickdey.liveserver"
-vscode "sdras.night-owl"
-vscode "shd101wyy.markdown-preview-enhanced"
-vscode "teabyii.ayu"
-vscode "twxs.cmake"
-vscode "tyriar.sort-lines"
-vscode "visualstudioexptteam.intellicode-api-usage-examples"
-vscode "visualstudioexptteam.vscodeintellicode"
-vscode "vscjava.vscode-gradle"
-vscode "vscjava.vscode-java-debug"
-vscode "vscjava.vscode-java-dependency"
-vscode "vscjava.vscode-java-pack"
-vscode "vscjava.vscode-java-test"
-vscode "vscjava.vscode-maven"
-vscode "vscode-icons-team.vscode-icons"
-vscode "zhuangtongfa.material-theme"
+# Homebrew Bundle - Modern Development Setup
+# Install with: brew bundle install
+
+#### SHELL ENHANCEMENTS ####
+brew "starship"                      # Modern, fast prompt
+brew "zsh-autosuggestions"           # Fish-like autosuggestions
+brew "zsh-syntax-highlighting"       # Syntax highlighting for zsh
+brew "fzf"                           # Fuzzy finder
+brew "zoxide"                        # Smarter cd command
+
+#### MODERN CLI REPLACEMENTS ####
+brew "bat"                           # Better cat
+brew "eza"                           # Better ls
+brew "ripgrep"                       # Better grep
+brew "fd"                            # Better find
+brew "dust"                          # Better du
+brew "procs"                         # Better ps
+brew "git-delta"                     # Better git diff
+
+#### SYSTEM MONITORING ####
+brew "btop"                          # Better top (C++ version)
+brew "htop"                          # Interactive process viewer
+brew "asitop"                        # Performance monitor for Apple Silicon
+
+#### DEVELOPER TOOLS ####
+brew "git"                           # Version control
+brew "gh"                            # GitHub CLI
+brew "tmux"                          # Terminal multiplexer
+brew "neovim"                        # Modern vim
+brew "emacs"                         # Text editor
+brew "jq"                            # JSON processor
+brew "yq"                            # YAML/XML processor
+brew "tree"                          # Directory tree viewer
+brew "watch"                         # Execute command periodically
+brew "pv"                            # Progress viewer for pipes
+
+#### NETWORK TOOLS ####
+brew "httpie"                        # User-friendly HTTP client
+brew "wget"                          # Download utility
+brew "nmap"                          # Network scanner
+
+#### DEVELOPMENT RUNTIMES ####
+brew "fnm"                           # Fast Node Manager
+brew "pipx"                          # Install Python CLI apps in isolation
+brew "watchman"                      # File watching service
+
+#### AI & PRODUCTIVITY ####
+brew "ollama"                        # Run LLMs locally
+brew "gemini-cli"                    # Gemini CLI client
+
+#### TESTING & UTILITIES ####
+brew "stress-ng"                     # Stress testing tool
+
+#### FONTS ####
+cask "font-jetbrains-mono-nerd-font" # Nerd Font with programming ligatures

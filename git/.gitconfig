@@ -2,24 +2,116 @@
 [user]
 	name = Joon Lee
 	email = joon@africacode.academy
-# Please adapt and uncomment the following lines:
-#	name = Joon Lee
-#	email = joon@africacode.org
+
 [credential]
 	helper = osxkeychain
+
 [http]
 	postBuffer = 524288000
+
 [filter "lfs"]
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
 	clean = git-lfs clean -- %f
+
 [init]
 	defaultBranch = master
+
 [color]
 	ui = auto
-[alias]
-	ds = diff --stat --color=always
-	taglog = for-each-ref refs/tags --format='%(refname:short) - %(subject)'
+
 [core]
-	pager = less -R -X
+	pager = delta
+	editor = nvim
+
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	navigate = true        # Use n and N to move between diff sections
+	light = false          # Set to true if using light terminal theme
+	side-by-side = false   # Set to true for side-by-side diffs
+	line-numbers = true
+	features = decorations
+	syntax-theme = Nord
+
+[delta "decorations"]
+	commit-decoration-style = bold yellow box ul
+	file-style = bold yellow ul
+	file-decoration-style = none
+	hunk-header-decoration-style = cyan box ul
+
+[merge]
+	conflictstyle = diff3
+
+[diff]
+	colorMoved = default
+
+[alias]
+	# Basic shortcuts
+	co = checkout
+	br = branch
+	ci = commit
+	st = status
+
+	# Status variations
+	s = status -sb
+	ss = status
+
+	# Diff variations
+	d = diff
+	ds = diff --staged
+	dw = diff --word-diff
+
+	# Log variations
+	l = log --oneline --graph --decorate -20
+	ll = log --oneline --graph --decorate
+	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+
+	# Show
+	last = log -1 HEAD --stat
+
+	# Add/commit shortcuts
+	a = add
+	aa = add --all
+	ap = add --patch
+
+	# Commit variations
+	cm = commit -m
+	ca = commit --amend
+	can = commit --amend --no-edit
+
+	# Pull/push
+	pl = pull
+	ps = push
+	pf = push --force-with-lease
+
+	# Branch operations
+	bra = branch -a
+	brd = branch -d
+	brD = branch -D
+
+	# Stash operations
+	sl = stash list
+	sa = stash apply
+	ss = stash save
+
+	# Diff stat (from your old config)
+	dst = diff --stat --color=always
+	dsc = diff --cached --stat --color=always
+
+	# Tag operations
+	taglog = for-each-ref refs/tags --format='%(refname:short) - %(subject)'
+
+	# Useful utilities
+	unstage = reset HEAD --
+	uncommit = reset --soft HEAD~1
+	aliases = config --get-regexp alias
+	contributors = shortlog --summary --numbered
+
+	# Find commits by message
+	fm = "!git log --all --grep="
+
+	# Find commits by code change
+	fc = "!git log --all -S"

@@ -3,60 +3,89 @@
 # Disable logoff with Control-D
 set -o ignoreeof
 
-# Autocomplete options
-setopt noautomenu
-setopt nomenucomplete
-
-# Better history behavior
+# History behavior
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_REDUCE_BLANKS
 setopt INC_APPEND_HISTORY
 setopt SHARE_HISTORY
+HISTSIZE=100000
+SAVEHIST=100000
+HISTFILE=~/.zsh_history
 
+#### COMPLETION ####
+autoload -Uz compinit
+compinit
 
-#### OH-MY-ZSH CONFIG ####
+# Autocomplete options (kept from old - prevents aggressive tab completion)
+setopt noautomenu
+setopt nomenucomplete
 
-export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME="joon"
-CASE_SENSITIVE="true"
-DISABLE_AUTO_UPDATE="true"
-
-# Plugins (add more as needed)
-plugins=(git git-joon)
-
-# Load Oh My Zsh
-source $ZSH/oh-my-zsh.sh
-
-
-#### ENVIRONMENT / TOOLING ####
-
-# Node Version Manager - load it properly
-export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
-[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
-
-# Auto-use .nvmrc if present
-autoload -U add-zsh-hook
-load-nvmrc() {
-  if [[ -f .nvmrc && -r .nvmrc ]]; then
-    nvm use --silent 2>/dev/null
-  fi
-}
-add-zsh-hook chpwd load-nvmrc
-load-nvmrc
+#### PATH / CDPATH ####
+# Homebrew first (Apple Silicon)
+export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 
 # CDPATH - directories to search when using cd
 export CDPATH=".:$HOME/dev/github"
 
-#### OPTIONAL: ZSH PLUGINS ####
+# User binaries
+export PATH="$HOME/.local/bin:$PATH"
 
-# Autosuggestions
-source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-bindkey '^[[Z' autosuggest-accept
+#### ENVIRONMENT / TOOLING ####
 
-# Syntax highlighting
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# Node Version Manager (fnm - fast alternative to nvm)
+# If you prefer nvm, comment fnm and uncomment nvm section below
+if command -v fnm >/dev/null 2>&1; then
+  eval "$(fnm env --use-on-cd)"
+fi
 
+# NVM (uncomment if you prefer nvm over fnm)
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+# [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+#
+# # Auto-use .nvmrc if present
+# autoload -U add-zsh-hook
+# load-nvmrc() {
+#   if [[ -f .nvmrc && -r .nvmrc ]]; then
+#     nvm use --silent 2>/dev/null
+#   fi
+# }
+# add-zsh-hook chpwd load-nvmrc
+# load-nvmrc
+
+#### MODERN CLI INTEGRATIONS ####
+
+# Starship prompt - must be at the end of the file
+eval "$(starship init zsh)"
+
+# zoxide - smarter cd
+eval "$(zoxide init zsh)"
+
+# fzf - fuzzy finder
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# fzf default options
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+export FZF_DEFAULT_OPTS="
+  --height 40% --layout=reverse --border
+  --preview 'bat --color=always --style=numbers --line-range=:500 {}'
+  --preview-window 'right:60%:wrap'
+  --bind 'ctrl-/:toggle-preview'
+"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+
+#### ZSH PLUGINS (brew-installed) ####
+
+# Autosuggestions (complements fzf for command history)
+if [ -f /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
+  source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+  bindkey '^[[Z' autosuggest-accept  # Shift+Tab to accept suggestion
+fi
+
+# Syntax highlighting (must be near the end)
+if [ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
+  source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+fi
 
 #### KEYBINDINGS & COMPLETION ####
 
@@ -71,47 +100,6 @@ tcsh_autolist() {
 zle -N tcsh_autolist
 bindkey '^I' tcsh_autolist
 
-
-#### ALIASES ####
-
-# Directory stack
-alias pd=dirs
-alias po=popd
-alias pop=popd
-alias pp=pushd
-
-# Utilities
-alias c=clear
-alias h=history
-alias inet='ifconfig -a | grep inet'
-alias grep='grep -n --color=auto'
-
-# Git
-alias gdst='git diff --stat --color=always | less -R -X'
-alias gdst-c='git diff --cached --stat --color=always | less -R -X'
-
-# Project shortcuts (customize as needed)
-alias dev='cd ~/dev'
-alias aca='cd ~/dev/github/aca'
-
-
-#### FUNCTIONS ####
-
-# Find file by name (shallow/deep)
-f()  { find . -name "*$@*"; }
-ff() { find . -type f -name "*$@*"; }
-
-# Recursive grep: all files
-gall() { grep -ir --include="*" -- "$@" .; }
-
-# Source grep (C, C++, JS, Py)
-glsrc() { grep -i --include="*.[ch]*" --include="*.js*" --include="*.py" -- "$@" *; }
-gsrc()  { grep -ir --include="*.[ch]*" --include="*.js*" --include="*.py" -- "$@" .; }
-
-# Python grep
-glpy() { grep -i --include="*.py" -- "$@" *; }
-gpy()  { grep -ir --include="*.py" -- "$@" .; }
-
-# JavaScript grep
-gljs() { grep -i --include="*.js*" -- "$@" *; }
-gjs()  { grep -ir --include="*.js*" -- "$@" .; }
+#### LOAD YOUR FILES ####
+[ -f ~/.zsh/aliases.zsh ] && source ~/.zsh/aliases.zsh
+[ -f ~/.zsh/functions.zsh ] && source ~/.zsh/functions.zsh

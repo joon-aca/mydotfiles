@@ -107,12 +107,16 @@ Great for debugging load, heat, and performance behavior.
 
 ## 🤖 AI & Productivity
 
+* **Claude Code** — primary AI coding assistant (install via npm)
+  `npm install -g @anthropic-ai/claude-code`
+  Your go-to for daily development, codebase understanding, refactoring
+
+* **gemini-cli** — secondary AI for intractable problems
+  Great for alternative approaches, math, and cross-checking solutions
+
 * **Ollama** — run local LLMs on Apple Silicon
   [https://ollama.ai/](https://ollama.ai/)
-
-* **gemini-cli** — quick terminal prompts & code review
-
-Works offline, private, and scriptable.
+  Complete privacy, works offline
 
 ---
 

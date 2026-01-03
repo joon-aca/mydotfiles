@@ -45,8 +45,9 @@ brew "pipx"                          # Install Python CLI apps in isolation
 brew "watchman"                      # File watching service
 
 #### AI & PRODUCTIVITY ####
-brew "ollama"                        # Run LLMs locally
-brew "gemini-cli"                    # Gemini CLI client
+# Note: claude-code is the primary AI CLI (install via: npm install -g @anthropic-ai/claude-code)
+brew "gemini-cli"                    # Gemini CLI - backup for intractable issues
+brew "ollama"                        # Run LLMs locally (Llama, Mistral, etc.)
 
 #### TESTING & UTILITIES ####
 brew "stress-ng"                     # Stress testing tool

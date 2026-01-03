@@ -1,0 +1,25 @@
+# This is Git's per-user configuration file.
+[user]
+	name = Joon Lee
+	email = joon@africacode.academy
+# Please adapt and uncomment the following lines:
+#	name = Joon Lee
+#	email = joon@africacode.org
+[credential]
+	helper = osxkeychain
+[http]
+	postBuffer = 524288000
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+[init]
+	defaultBranch = master
+[color]
+	ui = auto
+[alias]
+	ds = diff --stat --color=always
+	taglog = for-each-ref refs/tags --format='%(refname:short) - %(subject)'
+[core]
+	pager = less -R -X

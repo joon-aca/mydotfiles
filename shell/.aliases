@@ -1,0 +1,154 @@
+# Other aliases
+unalias 	cd
+
+#alias more         less
+
+alias lock         lockscreen
+alias se	   setenv
+alias pe	   printenv
+
+alias la           'ls -a'
+alias ll           'ls -l'
+alias lg	   'ls -alg'
+alias ls           'ls -F'
+
+alias cp	   'cp -i'
+	
+alias pd           dirs
+alias po           popd
+alias pp           pushd
+
+alias key          'man -k'
+alias run          'source'
+
+alias df           'df -k'
+alias du           'du -k'
+
+alias sta          status
+alias s            status
+
+alias c            clear
+alias f            find . -name \''*'\!^:q'*'\' -print 
+alias gsrc	   find . -name '\*.\[c\|cpp\|h\]' -print -exec grep '\!' \{\} \;
+
+alias sd113        setenv DISPLAY 131.106.113.104:0.0
+alias sd110        setenv DISPLAY 131.106.110.104:0.0
+alias sd120        setenv DISPLAY 131.106.11.120:0.0
+
+alias inet         'ifconfig -a | grep inet'
+
+alias nman 'tbl \!* | nroff -man | more'		# nroff -man
+alias nms 'tbl \!* | nroff -ms | more'                  # nroff -ms
+alias tms 'tbl \!* | troff -t -ms >! troff.output &'    # troff -ms
+alias tpr 'tbl \!* | troff -t -ms | lpr -t &'           # troff & print
+
+alias well?        date
+
+alias grep         'grep -n'  # add the line numbers
+
+alias aru '/usr/sybase/ar/bin/aruser &'
+
+alias setdisp 'se DISPLAY 208.236.26.51:0.0'
+alias setliberty 'se DISPLAY 64.252.95.118:0.0'
+
+alias pmake 		'make "CC=/usr/purify/purify -windows=no -log-file=/tmp/purify.out /opt/SUNWspro/bin/cc" "CXX=/usr/purify/purify -windows=no -log-file=/tmp/purify.out /usr/local/bin/g++"'
+#alias pmake		' make "CC=/usr/purify/purify -windows=no -log-file=/tmp/purify.out /opt/SUNWspro/bin/cc"'
+alias qmake		' make "CC=/usr/quantify/quantify -windows=no -log-file=/tmp/quantify.out /opt/SUNWspro/bin/cc"'
+alias cmake 		'make \!* ; cp \!* /usr/etc/webnative/.'
+
+# sccs commands
+alias diffs		'sccs diffs'
+alias sdiffs		'sccs diffs \!* | more'
+alias delget		'sccs delget'
+alias sdelget		'sccs delget'
+alias sdg		'sccs delget'
+alias sedit		'sccs edit'
+alias sprint		'sccs print \!* | more'
+alias sinfo		'sccs info'
+alias sinof		'sccs info'
+alias sunedit		'sccs unedit'
+alias sfix		'sccs fix -r'
+alias sjuno		'sccs info | grep juno'
+
+# git commands
+alias gl		'git log --decorate --name-only'
+alias glog		'gl'
+alias glp		'git log --decorate -p'
+alias gs		'git status'
+alias gst		'gs'
+alias gstat		'gs'
+alias gd		'git diff'
+alias gdiff		'gd'
+alias gpull		'git pull'
+alias gpush		'git push'
+alias gfetch		'git fetch'
+alias gblame		'git blame'
+alias gsub		'git submodule'
+alias gfe		'git submodule foreach "\!*"'
+alias gfor		'gfe'
+alias gforeach		'gfe'
+alias gco		'git checkout'
+alias gch		'gco'
+alias gcheckout		'gco'
+alias gls		'git ls-files'
+
+alias alog 		'tail -200 /usr/adm/appletalk/at_log'
+alias talog 		'tail -f /usr/adm/appletalk/at_log'
+alias vlog 		'tail -200 /usr/adm/appletalk/venture.log'
+alias bvlog 		'tail -500 /usr/adm/appletalk/venture.log'
+alias tvlog 		'tail -f /usr/adm/appletalk/venture.log'
+alias tlog 		'tail -200 /usr/adm/appletalk/trigger.log'
+alias btlog 		'tail -500 /usr/adm/appletalk/trigger.log'
+alias ttlog 		'tail -f /usr/adm/appletalk/trigger.log'
+alias slog 		'tail -200 /usr/etc/venture/data/mysql-slow.log'
+alias bslog 		'tail -500 /usr/etc/venture/data/mysql-slow.log'
+alias tslog 		'tail -f /usr/etc/venture/data/mysql-slow.log'
+
+alias webantive webnative
+
+alias my 		/usr/etc/venture/bin/mysql -u root -pxinetrlz -D webnative -A
+alias myadmin 		/usr/etc/venture/bin/mysqladmin -u root -pxinetrlz
+alias mybinlog 		/usr/etc/venture/bin/mysqlbinlog
+alias myd 		./mysqld --basedir=/usr/etc/venture --datadir=/usr/etc/venture/data
+alias myshut 		/usr/etc/venture/bin/mysqladmin -u root -pxinetrlz shutdown
+
+alias loc		more /u/juno/localcshrc
+alias beme		source /u/juno/.cshrc
+
+alias vt		setenv TERM vt100
+alias vt100		setenv TERM vt100
+
+alias xinet		ssh -X juno@131.106.11.41
+alias panther		ssh -X root@panther.xinet.com
+alias ts		ssh -X root@ts.xinet.com
+alias tigint		ssh -X root@tigint.xinet.com
+alias altix		ssh -X root@altixbuild.xinet.com
+alias vortex		ssh -X root@vortex.xinet.com
+
+alias sun17		ssh -X root@sunbuild17.xinet.com
+alias sol17		sun17
+alias altix17		ssh -X root@sgiloaner02.xinet.com
+alias leopard		ssh -X root@leopardbuild17.xinet.com
+alias leo		leopard
+alias leo17		leopard
+alias ts32		ssh -X root@linux32build17.xinet.com
+alias linux32		ts32
+alias linux64		ssh -X root@linux64build17.xinet.com
+alias ts64		linux64
+alias ts17		linux64
+alias portalbuild	ssh -X localadmin@osx106build.xinet.com
+
+alias pink		xterm -title pink -bg Pink -sl 5000 -sb -ls 
+alias wheat		xterm -title wheat -bg wheat -sl 5000 -sb -ls 
+alias gray		xterm -title gray -bg DarkGray -cr LightGoldenRod -sl 5000 -sb -ls 
+alias blue		xterm -title blue -bg MidnightBlue -fg LightGoldenRod -cr orange -sl 5000 -sb -ls 
+alias purple		xterm -sl 5000 -sb -ls -title purple -cr Purple -bg Lavender -fg black 
+
+alias prob		'cd /home/xinetmail/openproblems; cd'
+alias probs		/home/xinetmail/openproblems
+alias bug 		'cd /home/xinetmail/testingbugs; cd'
+
+alias errno		'grep \!* /u/juno/info/errno'
+alias vacay		'grep juno /u/mtxinu/lib/statuslog | tail -90'
+
+alias title_perl		perl -e 'print "\c[];@ARGV\a"'

@@ -22,6 +22,8 @@ mydotfiles/
 │   └── .gitconfig       # Git config with delta integration
 ├── starship/             # Starship prompt
 │   └── starship.toml    # Prompt configuration
+├── emacs/                # Emacs configuration
+│   └── .emacs           # Modern emacs with vintage keybindings
 ├── ssh/                  # SSH configuration (no private keys)
 │   └── config
 ├── claude/               # Claude Code settings

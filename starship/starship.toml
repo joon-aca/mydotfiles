@@ -2,9 +2,7 @@
 # Install location: ~/.config/starship.toml
 
 # Use custom format
-format = """
-[┌─](bold green)$username$hostname$directory$git_branch$git_status$git_state
-[└─>](bold green) """
+format = "$username$hostname$directory$git_branch $character"
 
 # Add a blank line between shell prompts
 add_newline = true
@@ -12,24 +10,25 @@ add_newline = true
 [username]
 style_user = "bold yellow"
 style_root = "bold red"
-format = "[$user]($style) "
+format = "[$user]($style)"
 disabled = false
 show_always = true
 
 [hostname]
 ssh_only = false
-format = "@ [$hostname](bold blue) "
+format = "[@$hostname](bold blue):"
 disabled = false
+trim_at = "."
 
 [directory]
 truncation_length = 3
 truncate_to_repo = true
-format = "in [$path]($style)[$read_only]($read_only_style) "
+format = "[$path]($style)[$read_only]($read_only_style)"
 style = "bold cyan"
 
 [git_branch]
-symbol = " "
-format = "on [$symbol$branch(:$remote_branch)]($style) "
+symbol = "*"
+format = "[\\[$symbol$branch(:$remote_branch)\\]]($style)"
 style = "bold purple"
 
 [git_status]

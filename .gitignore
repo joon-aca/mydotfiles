@@ -8,6 +8,10 @@
 .env
 .env.*
 
+# Private settings (moved to ~/mysettings)
+iterm2/
+ssh/
+
 # macOS
 .DS_Store
 .AppleDouble

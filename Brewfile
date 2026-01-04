@@ -47,7 +47,8 @@ brew "watchman"                      # File watching service
 #### AI & PRODUCTIVITY ####
 # Note: claude-code is the primary AI CLI (install via: npm install -g @anthropic-ai/claude-code)
 brew "gemini-cli"                    # Gemini CLI - backup for intractable issues
-brew "ollama"                        # Run LLMs locally (Llama, Mistral, etc.)
+# Note: mlx-lm for local LLMs (install via: pipx install mlx-lm)
+# Replaces ollama due to header bug in macOS 26.2
 
 #### TESTING & UTILITIES ####
 brew "stress-ng"                     # Stress testing tool

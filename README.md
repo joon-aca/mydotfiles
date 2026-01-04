@@ -28,7 +28,7 @@ This dotfiles repo configures a developer workstation optimized for:
 | Dev & Editing           | git, gh, tmux, neovim, emacs, jq, yq                        |
 | Networking              | httpie, wget, nmap                                          |
 | Runtimes                | fnm, pipx, watchman                                         |
-| AI / Productivity       | ollama, gemini-cli                                          |
+| AI / Productivity       | claude-code, gemini-cli, mlx-lm                             |
 | Utilities               | pv, watch, stress-ng                                        |
 | Fonts                   | JetBrains Mono Nerd Font                                    |
 
@@ -114,9 +114,11 @@ Great for debugging load, heat, and performance behavior.
 * **gemini-cli** — secondary AI for intractable problems
   Great for alternative approaches, math, and cross-checking solutions
 
-* **Ollama** — run local LLMs on Apple Silicon
-  [https://ollama.ai/](https://ollama.ai/)
-  Complete privacy, works offline
+* **MLX** — run local LLMs on Apple Silicon (install via pipx)
+  `pipx install mlx-lm`
+  [https://github.com/ml-explore/mlx-examples](https://github.com/ml-explore/mlx-examples)
+  Complete privacy, works offline, Apple's native ML framework
+  _Note: Replaces ollama due to header bug in macOS 26.2_
 
 ---
 
@@ -149,7 +151,11 @@ exec zsh
 brew install bat eza ripgrep fd dust procs git-delta
 brew install starship fzf zoxide
 brew install btop htop asitop
-brew install ollama gemini-cli
+brew install gemini-cli
+
+# AI tools (non-brew)
+npm install -g @anthropic-ai/claude-code
+pipx install mlx-lm
 ```
 
 ---
@@ -190,7 +196,9 @@ brew install ollama gemini-cli
 ```bash
 brew update && brew upgrade
 brew bundle dump --force
-ollama pull llama3
+
+# Update MLX models
+pipx upgrade mlx-lm
 ```
 
 Backup configs:

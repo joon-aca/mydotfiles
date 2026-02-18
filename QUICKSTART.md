@@ -4,8 +4,8 @@
 
 ```bash
 xcode-select --install
-git clone git@github.com:joon-aca/mydotfiles.git ~/mydotfiles
-cd ~/mydotfiles
+git clone https://github.com/joon-aca/mydotfiles.git ~/.mydotfiles
+cd ~/.mydotfiles
 ./bootstrap.sh
 exec zsh
 ```
@@ -14,8 +14,8 @@ exec zsh
 
 ```bash
 sudo apt update && sudo apt install -y git
-git clone git@github.com:joon-aca/mydotfiles.git ~/mydotfiles
-cd ~/mydotfiles
+git clone https://github.com/joon-aca/mydotfiles.git ~/.mydotfiles
+cd ~/.mydotfiles
 ./bootstrap.sh
 exec zsh
 ```

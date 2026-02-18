@@ -37,12 +37,22 @@ alias inet='ifconfig -a | grep inet'
 alias myip='curl -s ifconfig.me'
 alias ports='lsof -i -P -n | grep LISTEN'
 
+#### HTTP (curl aliases replacing httpie) ####
+alias http='curl -s -H "Accept: application/json"'
+alias http-get='curl -s -H "Accept: application/json"'
+alias http-post='curl -s -X POST -H "Content-Type: application/json" -d'
+alias http-put='curl -s -X PUT -H "Content-Type: application/json" -d'
+alias http-patch='curl -s -X PATCH -H "Content-Type: application/json" -d'
+alias http-delete='curl -s -X DELETE -H "Accept: application/json"'
+alias http-head='curl -sI'
+
 #### GIT (kept + normalized) ####
 alias g='git'
 alias gs='git status'
 alias gd='git diff'
 alias gds='git diff --staged'
 alias gl='git log --oneline --graph --decorate -20'
+alias glog='git log --graph --decorate --stat --format="%C(yellow)%h%C(reset) %C(cyan)%ad%C(reset) %C(bold)%s%C(reset) %C(dim)(%an)%C(reset)" --date=short'
 alias ga='git add'
 alias gaa='git add .'
 alias gc='git commit'

@@ -2,7 +2,7 @@
 # Install location: ~/.config/starship.toml
 
 # Use custom format
-format = "$username$hostname$directory$git_branch $character"
+format = "$username$hostname$directory$git_branch$git_status $character"
 
 # Add a blank line between shell prompts
 add_newline = true
@@ -27,23 +27,23 @@ format = "[$path]($style)[$read_only]($read_only_style)"
 style = "bold cyan"
 
 [git_branch]
-symbol = "*"
-format = "[\\[$symbol$branch(:$remote_branch)\\]]($style)"
+symbol = ""
+format = "[\\[$branch\\]](bold purple)"
 style = "bold purple"
 
 [git_status]
-format = '([\[$all_status$ahead_behind\]]($style) )'
-style = "bold red"
-conflicted = "="
-ahead = "⇡${count}"
-behind = "⇣${count}"
-diverged = "⇕⇡${ahead_count}⇣${behind_count}"
-untracked = "?${count}"
-stashed = '\$${count}'
-modified = "!${count}"
-staged = "+${count}"
-renamed = "»${count}"
-deleted = "✘${count}"
+format = '([$all_status](bold purple))'
+style = "bold purple"
+conflicted = "*"
+ahead = ""
+behind = ""
+diverged = ""
+untracked = "+"
+stashed = "^"
+modified = "*"
+staged = "="
+renamed = "*"
+deleted = "*"
 
 [git_state]
 format = '\([$state( $progress_current/$progress_total)]($style)\) '

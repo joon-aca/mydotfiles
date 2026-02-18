@@ -79,7 +79,7 @@ install_linux() {
     bat ripgrep fd-find fzf \
     tmux emacs-nox btop htop \
     git gh neovim \
-    jq yq tree watch pv nmap wget httpie pipx \
+    jq yq tree watch pv nmap wget pipx \
     curl unzip
 
   # Symlink fd/bat naming quirks on Ubuntu

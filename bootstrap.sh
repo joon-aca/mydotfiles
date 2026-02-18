@@ -80,7 +80,7 @@ install_linux() {
     tmux emacs-nox btop htop \
     git gh neovim \
     jq yq tree watch pv nmap wget pipx \
-    curl unzip
+    nodejs npm curl unzip
 
   # Symlink fd/bat naming quirks on Ubuntu
   mkdir -p "$HOME/.local/bin"
@@ -125,12 +125,12 @@ install_linux() {
     curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
   fi
 
-  # fnm (Fast Node Manager)
+  # fnm (Fast Node Manager) — for per-project node version management
   if ! command -v fnm &>/dev/null; then
     info "Installing fnm..."
-    curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell
-    export PATH="$HOME/.local/share/fnm:$PATH"
+    curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell --install-dir "$HOME/.local/bin"
   fi
+
 
   # Git credential helper
   git config --global credential.helper store
@@ -138,27 +138,25 @@ install_linux() {
 
 # ─── Common (both platforms) ─────────────────────────
 install_common() {
-  # Ensure fnm is on PATH
-  if [ -d "$HOME/.local/share/fnm" ]; then
-    export PATH="$HOME/.local/share/fnm:$PATH"
+  # Ensure ~/.local/bin is on PATH
+  if [ -d "$HOME/.local/bin" ]; then
+    export PATH="$HOME/.local/bin:$PATH"
   fi
 
-  # fnm + Node LTS
-  if command -v fnm &>/dev/null; then
-    info "Installing Node LTS via fnm..."
-    eval "$(fnm env)"
-    fnm install --lts
-    fnm use lts-latest
-  fi
-
-  # AI CLIs via npm
+  # AI CLI tools
   info "Installing AI CLI tools..."
-  npm install -g @anthropic-ai/claude-code
-  npm install -g @openai/codex
-  npm install -g @google/gemini-cli
 
-  # Native installer alternative (per-user, auto-updates, no Node required):
-  # curl -fsSL https://claude.ai/install.sh | bash
+  # Claude Code — native installer (no Node required)
+  if ! command -v claude &>/dev/null; then
+    curl -fsSL https://claude.ai/install.sh | bash
+  fi
+  sudo ln -sf "$HOME/.local/bin/claude" /usr/local/bin/claude
+
+  # Codex & Gemini — require system Node
+  if command -v npm &>/dev/null; then
+    sudo npm install -g @openai/codex
+    sudo npm install -g @google/gemini-cli
+  fi
 
   # Symlink all configs
   info "Symlinking configs..."

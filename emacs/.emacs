@@ -7,10 +7,9 @@
 
 ;; Disable unnecessary UI elements
 (menu-bar-mode -1)
-(tool-bar-mode -1)
-(tooltip-mode -1)
-(when (fboundp 'scroll-bar-mode)
-  (scroll-bar-mode -1))
+(when (fboundp 'tool-bar-mode)   (tool-bar-mode -1))
+(when (fboundp 'tooltip-mode)    (tooltip-mode -1))
+(when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
 ;; No startup screen
 (setq inhibit-splash-screen t)

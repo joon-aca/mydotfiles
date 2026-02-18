@@ -60,62 +60,32 @@ alias gdst-c='git diff --cached --stat --color=always | less -R -X'
 alias dev='cd ~/dev'
 alias aca='cd ~/dev/github/aca'
 
-#### MACOS-SPECIFIC UTILITIES ####
-# Adapted from mathiasbynens/dotfiles
-# These are macOS-specific commands that improve daily workflow
-
-# cleanup - Recursively delete .DS_Store files
-# Usage: cleanup
-# Why useful: macOS creates .DS_Store files everywhere, clutters git repos
-# Run this in a directory to clean up all .DS_Store files in subdirectories
-alias cleanup="find . -type f -name '*.DS_Store' -ls -delete"
-
-# show/hide - Toggle hidden files visibility in Finder
-# Usage: show   (shows hidden files like .git, .env, etc.)
-#        hide   (hides them again)
-# Why useful: Quick toggle for seeing dotfiles in Finder GUI
-alias show="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
-alias hide="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
-
-# hidedesktop/showdesktop - Toggle desktop icons visibility
-# Usage: hidedesktop   (hides all icons on desktop)
-#        showdesktop   (shows them again)
-# Why useful: Clean up desktop for screenshots or presentations
-alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
-alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
+#### CROSS-PLATFORM UTILITIES ####
 
 # path - Print PATH entries one per line
-# Usage: path
-# Why useful: Much easier to read than echo $PATH (which shows colon-separated)
 alias path='echo -e ${PATH//:/\\n}'
 
 # week - Show current ISO week number
-# Usage: week
-# Why useful: Quick reference for weekly planning, sprints, etc.
 alias week='date +%V'
 
 # reload - Restart the shell
-# Usage: reload
-# Why useful: After editing .zshrc or other config, reload without closing terminal
 alias reload="exec ${SHELL} -l"
 
-# afk - Lock the screen immediately
-# Usage: afk
-# Why useful: Quick keyboard command to lock screen (away from keyboard)
-alias afk="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend"
+#### OS-SPECIFIC UTILITIES ####
 
-# flushdns - Clear DNS cache
-# Usage: flushdns
-# Why useful: When DNS isn't resolving correctly or you need fresh lookups
-alias flushdns="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder"
-
-# emptytrash - Thoroughly empty the Trash
-# Usage: emptytrash
-# Why useful: Securely empties trash and clears system logs
-# Warning: This is permanent deletion, use with caution
-alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash; sudo rm -rfv /private/var/log/asl/*.asl"
-
-# chromekill - Kill all Chrome renderer processes
-# Usage: chromekill
-# Why useful: Chrome can leak memory in renderer processes, this frees it up
-alias chromekill="ps ux | grep '[C]hrome Helper --type=renderer' | grep -v extension-process | tr -s ' ' | cut -d ' ' -f2 | xargs kill"
+if [[ "$_OS" == "mac" ]]; then
+  # macOS-specific (adapted from mathiasbynens/dotfiles)
+  alias afk="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend"
+  alias flushdns="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder"
+  alias cleanup="find . -type f -name '*.DS_Store' -ls -delete"
+  alias show="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
+  alias hide="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
+  alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
+  alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
+  alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash; sudo rm -rfv /private/var/log/asl/*.asl"
+  alias chromekill="ps ux | grep '[C]hrome Helper --type=renderer' | grep -v extension-process | tr -s ' ' | cut -d ' ' -f2 | xargs kill"
+elif [[ "$_OS" == "linux" ]]; then
+  alias open='xdg-open'
+  alias afk='loginctl lock-session'
+  alias flushdns='sudo systemd-resolve --flush-caches'
+fi

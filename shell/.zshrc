@@ -20,9 +20,20 @@ compinit
 setopt noautomenu
 setopt nomenucomplete
 
+#### OS DETECTION ####
+case "$(uname -s)" in
+  Darwin) _OS="mac" ;;
+  Linux)  _OS="linux" ;;
+esac
+
 #### PATH / CDPATH ####
-# Homebrew first (Apple Silicon)
-export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+if [[ "$_OS" == "mac" ]]; then
+  export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+  _BREW_PREFIX="/opt/homebrew"
+elif [[ "$_OS" == "linux" && -d /home/linuxbrew/.linuxbrew ]]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+  _BREW_PREFIX="/home/linuxbrew/.linuxbrew"
+fi
 
 # CDPATH - directories to search when using cd
 export CDPATH=".:$HOME/dev/github"
@@ -33,7 +44,6 @@ export PATH="$HOME/.local/bin:$PATH"
 #### ENVIRONMENT / TOOLING ####
 
 # Node Version Manager (fnm - fast alternative to nvm)
-# If you prefer nvm, comment fnm and uncomment nvm section below
 if command -v fnm >/dev/null 2>&1; then
   eval "$(fnm env --use-on-cd)"
 fi
@@ -62,7 +72,12 @@ eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 
 # fzf - fuzzy finder
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+if [ -f ~/.fzf.zsh ]; then
+  source ~/.fzf.zsh
+elif [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]; then
+  source /usr/share/doc/fzf/examples/key-bindings.zsh
+  [ -f /usr/share/doc/fzf/examples/completion.zsh ] && source /usr/share/doc/fzf/examples/completion.zsh
+fi
 
 # fzf default options
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
@@ -74,17 +89,21 @@ export FZF_DEFAULT_OPTS="
 "
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
-#### ZSH PLUGINS (brew-installed) ####
+#### ZSH PLUGINS ####
 
-# Autosuggestions (complements fzf for command history)
-if [ -f /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
-  source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-  bindkey '^[[Z' autosuggest-accept  # Shift+Tab to accept suggestion
+# Autosuggestions — brew location or apt location
+if [ -f "${_BREW_PREFIX:-}/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]; then
+  source "$_BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+elif [ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
+  source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 fi
+bindkey '^[[Z' autosuggest-accept  # Shift+Tab to accept suggestion
 
-# Syntax highlighting (must be near the end)
-if [ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
-  source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# Syntax highlighting — brew location or apt location (must be near the end)
+if [ -f "${_BREW_PREFIX:-}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]; then
+  source "$_BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+elif [ -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
+  source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
 
 #### KEYBINDINGS & COMPLETION ####

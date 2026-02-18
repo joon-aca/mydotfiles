@@ -3,9 +3,6 @@
 	name = Joon Lee
 	email = joon@africacode.academy
 
-[credential]
-	helper = osxkeychain
-
 [http]
 	postBuffer = 524288000
 
@@ -121,3 +118,5 @@
 
 	# Find commits by code change
 	fc = "!git log --all -S"
+[credential]
+	helper = store

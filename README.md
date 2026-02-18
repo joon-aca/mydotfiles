@@ -1,6 +1,6 @@
 # My Dotfiles
 
-A lightweight setup for macOS. A work in progress and mostly for my benefit...
+A cross-platform (macOS + Ubuntu/Debian) developer workstation setup. A work in progress and mostly for my benefit...
 
 ---
 
@@ -11,7 +11,8 @@ This dotfiles repo configures a developer workstation optimized for:
 * ⚡ **Performance** — fast shell startup, modern replacements for slow legacy tools
 * 🧭 **Productivity** — smart navigation, helpful CLI enhancements, fewer keystrokes
 * 🧑‍💻 **Developer ergonomics** — readable output, consistent workflows across projects
-* 🍎 **Apple Silicon** — ARM-native tools whenever possible
+* 🍎 **Apple Silicon** — ARM-native tools on macOS
+* 🐧 **Linux** — Ubuntu/Debian support via apt + targeted installs
 * 🔁 **Portability** — easy setup across machines
 
 > Think of this as a thoughtful refresh of classic Unix tooling — familiar workflows, but faster and friendlier.
@@ -24,11 +25,11 @@ This dotfiles repo configures a developer workstation optimized for:
 | ----------------------- | ----------------------------------------------------------- |
 | Shell & Navigation      | Starship, fzf, zoxide, autosuggestions, syntax highlighting |
 | Modern CLI Replacements | bat, eza, ripgrep, fd, dust, procs, git-delta               |
-| Monitoring              | btop, htop, asitop                                          |
+| Monitoring              | btop, htop, asitop (macOS only)                             |
 | Dev & Editing           | git, gh, tmux, neovim, emacs, jq, yq                        |
 | Networking              | httpie, wget, nmap                                          |
 | Runtimes                | fnm, pipx, watchman                                         |
-| AI / Productivity       | claude-code, gemini-cli, mlx-lm                             |
+| AI / Productivity       | claude-code, codex, gemini-cli, mlx-lm (macOS)              |
 | Utilities               | pv, watch, stress-ng                                        |
 | Fonts                   | JetBrains Mono Nerd Font                                    |
 
@@ -124,39 +125,16 @@ Great for debugging load, heat, and performance behavior.
 
 ## 🧱 Installation
 
-### Quick Setup
+Works on **macOS** (Homebrew) and **Ubuntu/Debian** (apt + targeted installs).
 
 ```bash
-git clone https://github.com/joon-aca/mydotfiles.git ~/mydotfiles
+git clone git@github.com:joon-aca/mydotfiles.git ~/mydotfiles
 cd ~/mydotfiles
-
-brew bundle install
-
-cp shell/.zshrc ~/.zshrc
-mkdir -p ~/.zsh
-cp shell/*.zsh ~/.zsh/
-
-mkdir -p ~/.config
-cp starship/starship.toml ~/.config/starship.toml
-
-cp git/.gitconfig ~/.gitconfig
-$(brew --prefix)/opt/fzf/install
-
+./bootstrap.sh
 exec zsh
 ```
 
-### Selective Installation
-
-```bash
-brew install bat eza ripgrep fd dust procs git-delta
-brew install starship fzf zoxide
-brew install btop htop asitop
-brew install gemini-cli
-
-# AI tools (non-brew)
-npm install -g @anthropic-ai/claude-code
-pipx install mlx-lm
-```
+The bootstrap script handles everything: package installation, config symlinking, shell change, and AI CLI tools. See `bootstrap.sh` for details.
 
 ---
 
@@ -193,21 +171,18 @@ pipx install mlx-lm
 
 ## 🔄 Maintenance
 
+**macOS:**
 ```bash
 brew update && brew upgrade
 brew bundle dump --force
-
-# Update MLX models
-pipx upgrade mlx-lm
 ```
 
-Backup configs:
-
+**Linux:**
 ```bash
-cp ~/.zshrc ~/.zshrc.backup
-cp ~/.gitconfig ~/.gitconfig.backup
-cp ~/.config/starship.toml ~/.config/starship.toml.backup
+sudo apt update && sudo apt upgrade -y
 ```
+
+Configs are symlinked — edit in `~/mydotfiles`, changes apply immediately (restart shell or `reload`).
 
 ---
 

@@ -20,7 +20,7 @@ brew "git-delta"                     # Better git diff
 #### SYSTEM MONITORING ####
 brew "btop"                          # Better top (C++ version)
 brew "htop"                          # Interactive process viewer
-brew "asitop"                        # Performance monitor for Apple Silicon
+brew "asitop"                        # Performance monitor for Apple Silicon (macOS only)
 
 #### DEVELOPER TOOLS ####
 brew "git"                           # Version control

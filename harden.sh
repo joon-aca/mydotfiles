@@ -7,7 +7,7 @@
 #
 # What it does:
 #   1. Patches system, installs baseline packages
-#   2. Hardens SSH (key-only, no root, rate-limited)
+#   2. Hardens SSH (key-only, no root, rate-limited, port 22)
 #   3. Configures fail2ban (SSH jail with escalating bans)
 #   4. Sets up UFW firewall (deny all incoming, allow SSH)
 #   5. Enables unattended security upgrades (auto-reboot at 4am)
@@ -31,7 +31,12 @@ while getopts "u:h:p:" opt; do
   case "$opt" in
     u) ADMIN_USER="$OPTARG" ;;
     h) SET_HOSTNAME="$OPTARG" ;;
-    p) SSH_PORT="$OPTARG" ;;
+    p)
+      if [ "$OPTARG" != "22" ]; then
+        error "Custom SSH ports are disabled in this script revision. Keep SSH on port 22."
+      fi
+      SSH_PORT="22"
+      ;;
     *) echo "Usage: $0 [-u admin_user] [-h hostname] [-p ssh_port]"; exit 1 ;;
   esac
 done
@@ -44,6 +49,11 @@ error() { printf "\033[1;31m✗ %s\033[0m\n" "$*"; exit 1; }
 if ! sudo -n true 2>/dev/null; then
   info "This script needs sudo — authenticating now..."
   sudo -v
+fi
+
+# Require at least one SSH key before enforcing key-only auth.
+if [ ! -s "$HOME/.ssh/authorized_keys" ]; then
+  error "Missing $HOME/.ssh/authorized_keys. Refusing to enforce key-only SSH without a key."
 fi
 
 # ─── 0) Hostname (optional) ─────────────────────────
@@ -113,8 +123,14 @@ EOF
 
 # Validate config before reloading
 if sudo sshd -t 2>&1; then
-  info "SSH config valid — reloading sshd..."
-  sudo systemctl reload sshd
+  info "SSH config valid — reloading SSH service..."
+  if sudo systemctl list-unit-files | grep -q '^ssh\.service'; then
+    sudo systemctl reload ssh
+  elif sudo systemctl list-unit-files | grep -q '^sshd\.service'; then
+    sudo systemctl reload sshd
+  else
+    error "Could not find ssh.service or sshd.service to reload."
+  fi
 else
   error "SSH config validation failed — NOT reloading. Fix /etc/ssh/sshd_config.d/99-hardening.conf"
 fi
@@ -162,22 +178,13 @@ sudo fail2ban-client status sshd 2>/dev/null || warn "fail2ban sshd jail not rea
 # ─── 6) UFW firewall ────────────────────────────────
 info "Configuring UFW firewall..."
 
-# Reset to clean slate (idempotent)
-sudo ufw --force reset > /dev/null 2>&1
-
 # Default policies
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
 
-# Allow SSH (use custom port if set)
-if [ "$SSH_PORT" = "22" ]; then
-  sudo ufw allow OpenSSH
-else
-  sudo ufw allow "$SSH_PORT"/tcp comment 'SSH'
-fi
-
-# Rate limit SSH to slow brute force (complements fail2ban)
-sudo ufw limit "$SSH_PORT"/tcp comment 'SSH rate limit'
+# Allow and rate limit SSH on port 22
+sudo ufw allow OpenSSH
+sudo ufw limit OpenSSH
 
 # Enable
 sudo ufw --force enable
@@ -233,12 +240,19 @@ sudo usermod -aG sudo "$ADMIN_USER"
 # Lock password (key-only; SSH password auth is off)
 sudo passwd -l "$ADMIN_USER" 2>/dev/null || true
 
-# Copy SSH keys from current user -> admin user
+# Copy authorized_keys from current user -> admin user
 if [ "$(whoami)" != "$ADMIN_USER" ]; then
   info "Copying SSH authorized_keys to $ADMIN_USER..."
-  sudo rsync -a --chown="${ADMIN_USER}:${ADMIN_USER}" ~/.ssh /home/"$ADMIN_USER"/
-  sudo chmod 700 /home/"$ADMIN_USER"/.ssh
-  sudo chmod 600 /home/"$ADMIN_USER"/.ssh/authorized_keys
+  sudo install -d -m 700 -o "$ADMIN_USER" -g "$ADMIN_USER" /home/"$ADMIN_USER"/.ssh
+  sudo install -m 600 -o "$ADMIN_USER" -g "$ADMIN_USER" "$HOME/.ssh/authorized_keys" /home/"$ADMIN_USER"/.ssh/authorized_keys
+else
+  sudo install -d -m 700 -o "$ADMIN_USER" -g "$ADMIN_USER" /home/"$ADMIN_USER"/.ssh
+  sudo chmod 600 /home/"$ADMIN_USER"/.ssh/authorized_keys 2>/dev/null || true
+  sudo chown "$ADMIN_USER":"$ADMIN_USER" /home/"$ADMIN_USER"/.ssh/authorized_keys 2>/dev/null || true
+fi
+
+if ! sudo test -s /home/"$ADMIN_USER"/.ssh/authorized_keys; then
+  error "Target user $ADMIN_USER has no authorized_keys after setup; aborting to prevent lockout."
 fi
 
 # Verify

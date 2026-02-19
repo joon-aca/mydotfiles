@@ -119,4 +119,4 @@
 	# Find commits by code change
 	fc = "!git log --all -S"
 [credential]
-	helper = store
+	helper = osxkeychain

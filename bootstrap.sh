@@ -136,7 +136,7 @@ install_linux() {
   git config --global credential.helper store
 }
 
-# ─── Common (both platforms) ─────────────────────────
+# ─── Common installs (both platforms) ────────────────
 install_common() {
   # Ensure ~/.local/bin is on PATH
   if [ -d "$HOME/.local/bin" ]; then
@@ -157,7 +157,10 @@ install_common() {
     sudo npm install -g @openai/codex
     sudo npm install -g @google/gemini-cli
   fi
+}
 
+# ─── Home directory config setup ─────────────────────
+setup_home() {
   # Symlink all configs
   info "Symlinking configs..."
   ln -sf "$DOTFILES/shell/.zshrc"           "$HOME/.zshrc"
@@ -182,10 +185,13 @@ install_common() {
 }
 
 # ─── Main ────────────────────────────────────────────
-case "$OS" in
-  Darwin) install_mac ;;
-  Linux)  install_linux ;;
-  *)      error "Unsupported OS: $OS" ;;
-esac
+setup_home
 
-install_common
+if [[ "${1:-}" != "--home-only" && "${1:-}" != "-h" ]]; then
+  case "$OS" in
+    Darwin) install_mac ;;
+    Linux)  install_linux ;;
+    *)      error "Unsupported OS: $OS" ;;
+  esac
+  install_common
+fi

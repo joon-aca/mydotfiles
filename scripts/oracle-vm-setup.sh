@@ -78,13 +78,29 @@ fi
 # ── Git / GitHub config ───────────────────────────────────────────────────────
 if [[ -n "$GITHUB_USER" || -n "$GITHUB_EMAIL" ]]; then
     echo "[git] Configuring git for '$NEW_USER'"
-    GITCONFIG="/home/$NEW_USER/.gitconfig"
     sudo -u "$NEW_USER" git config --global user.name  "$GITHUB_USER"
     sudo -u "$NEW_USER" git config --global user.email "$GITHUB_EMAIL"
-    chown "$NEW_USER:$NEW_USER" "$GITCONFIG"
     echo "[git] user.name=$GITHUB_USER  user.email=$GITHUB_EMAIL"
 else
     echo "[git] No GitHub details provided, skipping"
+fi
+
+# ── GitHub SSH key ────────────────────────────────────────────────────────────
+USER_SSH_DIR="/home/$NEW_USER/.ssh"
+GH_KEY="$USER_SSH_DIR/id_ed25519"
+
+if [[ -n "$GITHUB_EMAIL" && ! -f "$GH_KEY" ]]; then
+    echo "[github] Generating ed25519 SSH key for '$NEW_USER'"
+    mkdir -p "$USER_SSH_DIR"
+    sudo -u "$NEW_USER" ssh-keygen -t ed25519 -C "$GITHUB_EMAIL" -f "$GH_KEY" -N ""
+    chown -R "$NEW_USER:$NEW_USER" "$USER_SSH_DIR"
+    chmod 700 "$USER_SSH_DIR"
+    chmod 600 "$GH_KEY"
+    chmod 644 "$GH_KEY.pub"
+elif [[ -f "$GH_KEY" ]]; then
+    echo "[github] SSH key already exists, skipping"
+else
+    echo "[github] No email provided, skipping SSH key generation"
 fi
 
 # ── Done ──────────────────────────────────────────────────────────────────────
@@ -94,3 +110,8 @@ echo "  Hostname : $(hostname)"
 echo "  User     : $(id "$NEW_USER")"
 [[ -n "$GITHUB_USER" ]]  && echo "  Git name : $GITHUB_USER"
 [[ -n "$GITHUB_EMAIL" ]] && echo "  Git email: $GITHUB_EMAIL"
+if [[ -f "$GH_KEY.pub" ]]; then
+    echo ""
+    echo "Add this SSH public key to GitHub (https://github.com/settings/ssh/new):"
+    cat "$GH_KEY.pub"
+fi

@@ -146,16 +146,13 @@ install_common() {
   # AI CLI tools
   info "Installing AI CLI tools..."
 
-  # Claude Code — native installer (no Node required)
-  if ! command -v claude &>/dev/null; then
-    curl -fsSL https://claude.ai/install.sh | bash
-  fi
-  sudo ln -sf "$HOME/.local/bin/claude" /usr/local/bin/claude
-
-  # Codex & Gemini — require system Node
+  # Claude Code, Codex & Gemini — require system Node
   if command -v npm &>/dev/null; then
+    sudo npm install -g @anthropic-ai/claude-code
     sudo npm install -g @openai/codex
     sudo npm install -g @google/gemini-cli
+  else
+    warn "npm not found — skipping AI CLI tools install"
   fi
 }
 

@@ -25,3 +25,9 @@ exec zsh
 ```bash
 ./harden.sh -u joon -h myhostname
 ```
+
+## Optional: server software (Docker, Caddy, Dockge)
+
+```bash
+./server-setup.sh
+```

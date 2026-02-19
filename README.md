@@ -136,6 +136,16 @@ exec zsh
 
 The bootstrap script handles everything: package installation, config symlinking, shell change, and AI CLI tools. See `bootstrap.sh` for details.
 
+### Server setup (optional)
+
+For servers that need Docker, Caddy, and Dockge:
+
+```bash
+./server-setup.sh
+```
+
+This installs Docker (official apt repo), Caddy (official apt repo), sets up `/opt/stacks` with setgid docker, and deploys Dockge to `/opt/dockge`.
+
 ---
 
 ## 🧭 Everyday Shortcuts

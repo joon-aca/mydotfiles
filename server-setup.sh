@@ -57,6 +57,30 @@ install_caddy() {
   sudo apt-get install -y caddy
 }
 
+# ─── Swap file ───────────────────────────────────────
+setup_swap() {
+  local size="${1:-2G}"
+  local swapfile="/swapfile"
+
+  if swapon --show | grep -q "^${swapfile}"; then
+    info "Swap already active: $(free -h | awk '/^Swap:/ {print $2}')"
+    return
+  fi
+
+  info "Creating ${size} swap file at ${swapfile}..."
+  sudo fallocate -l "$size" "$swapfile"
+  sudo chmod 600 "$swapfile"
+  sudo mkswap "$swapfile"
+  sudo swapon "$swapfile"
+
+  if ! grep -q "^${swapfile}" /etc/fstab; then
+    echo "${swapfile} none swap sw 0 0" | sudo tee -a /etc/fstab > /dev/null
+    info "Added swap to /etc/fstab for persistence across reboots"
+  fi
+
+  info "Swap enabled: $(free -h | awk '/^Swap:/ {print $2}')"
+}
+
 # ─── /opt/stacks (shared docker compose directory) ───
 setup_stacks() {
   info "Setting up /opt/stacks..."
@@ -80,10 +104,11 @@ install_dockge() {
 }
 
 # ─── Main ────────────────────────────────────────────
+setup_swap
 install_docker
 install_caddy
 setup_stacks
 install_dockge
 
-info "Done! Docker, Caddy, and Dockge are installed."
+info "Done! Swap, Docker, Caddy, and Dockge are installed."
 info "Verify with: docker --version, caddy version, curl localhost:5001"

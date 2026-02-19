@@ -240,16 +240,16 @@ sudo usermod -aG sudo "$ADMIN_USER"
 # Lock password (key-only; SSH password auth is off)
 sudo passwd -l "$ADMIN_USER" 2>/dev/null || true
 
-# Copy authorized_keys from current user -> admin user
-if [ "$(whoami)" != "$ADMIN_USER" ]; then
-  info "Copying SSH authorized_keys to $ADMIN_USER..."
-  sudo install -d -m 700 -o "$ADMIN_USER" -g "$ADMIN_USER" /home/"$ADMIN_USER"/.ssh
-  sudo install -m 600 -o "$ADMIN_USER" -g "$ADMIN_USER" "$HOME/.ssh/authorized_keys" /home/"$ADMIN_USER"/.ssh/authorized_keys
-else
-  sudo install -d -m 700 -o "$ADMIN_USER" -g "$ADMIN_USER" /home/"$ADMIN_USER"/.ssh
-  sudo chmod 600 /home/"$ADMIN_USER"/.ssh/authorized_keys 2>/dev/null || true
-  sudo chown "$ADMIN_USER":"$ADMIN_USER" /home/"$ADMIN_USER"/.ssh/authorized_keys 2>/dev/null || true
-fi
+# Merge authorized_keys from current user -> admin user (append unique keys)
+info "Merging SSH authorized_keys into $ADMIN_USER..."
+sudo install -d -m 700 -o "$ADMIN_USER" -g "$ADMIN_USER" /home/"$ADMIN_USER"/.ssh
+sudo touch /home/"$ADMIN_USER"/.ssh/authorized_keys
+sudo chown "$ADMIN_USER":"$ADMIN_USER" /home/"$ADMIN_USER"/.ssh/authorized_keys
+sudo chmod 600 /home/"$ADMIN_USER"/.ssh/authorized_keys
+sudo sh -c "cat /home/${ADMIN_USER}/.ssh/authorized_keys \"$HOME/.ssh/authorized_keys\" | awk 'NF && !seen[\$0]++' > /home/${ADMIN_USER}/.ssh/authorized_keys.new"
+sudo mv /home/"$ADMIN_USER"/.ssh/authorized_keys.new /home/"$ADMIN_USER"/.ssh/authorized_keys
+sudo chown "$ADMIN_USER":"$ADMIN_USER" /home/"$ADMIN_USER"/.ssh/authorized_keys
+sudo chmod 600 /home/"$ADMIN_USER"/.ssh/authorized_keys
 
 if ! sudo test -s /home/"$ADMIN_USER"/.ssh/authorized_keys; then
   error "Target user $ADMIN_USER has no authorized_keys after setup; aborting to prevent lockout."

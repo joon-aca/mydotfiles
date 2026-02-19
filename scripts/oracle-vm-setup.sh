@@ -65,9 +65,10 @@ SSH_SOURCE_DIR="/home/$SSH_SOURCE/.ssh"
 SSH_DEST_DIR="/home/$NEW_USER/.ssh"
 
 if [[ -f "$SSH_SOURCE_DIR/authorized_keys" ]]; then
-    echo "[ssh] Copying authorized_keys from '$SSH_SOURCE' to '$NEW_USER'"
+    echo "[ssh] Appending authorized_keys from '$SSH_SOURCE' to '$NEW_USER'"
     mkdir -p "$SSH_DEST_DIR"
-    cp "$SSH_SOURCE_DIR/authorized_keys" "$SSH_DEST_DIR/authorized_keys"
+    cat "$SSH_SOURCE_DIR/authorized_keys" >> "$SSH_DEST_DIR/authorized_keys"
+    sort -u -o "$SSH_DEST_DIR/authorized_keys" "$SSH_DEST_DIR/authorized_keys"
     chown -R "$NEW_USER:$NEW_USER" "$SSH_DEST_DIR"
     chmod 700 "$SSH_DEST_DIR"
     chmod 600 "$SSH_DEST_DIR/authorized_keys"

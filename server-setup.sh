@@ -103,12 +103,24 @@ install_dockge() {
   sudo docker compose -f /opt/dockge/compose.yaml up -d
 }
 
+# ─── fnm (Fast Node Manager) ─────────────────────────
+install_fnm() {
+  if command -v fnm &>/dev/null; then
+    info "fnm already installed: $(fnm --version)"
+    return
+  fi
+
+  info "Installing fnm..."
+  curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell --install-dir "$HOME/.local/bin"
+}
+
 # ─── Main ────────────────────────────────────────────
 setup_swap
 install_docker
 install_caddy
 setup_stacks
 install_dockge
+install_fnm
 
-info "Done! Swap, Docker, Caddy, and Dockge are installed."
+info "Done! Swap, Docker, Caddy, Dockge, and fnm are installed."
 info "Verify with: docker --version, caddy version, curl localhost:5001"

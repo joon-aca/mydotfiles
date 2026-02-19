@@ -79,8 +79,8 @@ install_linux() {
     bat ripgrep fd-find fzf \
     tmux emacs-nox btop htop \
     git gh neovim \
-    jq yq tree watch pv nmap wget pipx \
-    nodejs npm curl unzip
+    jq tree watch pv nmap wget pipx \
+    nodejs curl unzip
 
   # Symlink fd/bat naming quirks on Ubuntu
   mkdir -p "$HOME/.local/bin"
@@ -110,25 +110,53 @@ install_linux() {
     sudo apt-get update && sudo apt-get install -y eza
   fi
 
-  # git-delta (no aarch64 .deb — use tarball)
-  install_github_bin "dandavison/delta" "delta.*aarch64-unknown-linux-gnu\\.tar\\.gz" "delta"
+  # Map arch for GitHub release assets
+  local gh_arch
+  case "$ARCH" in
+    x86_64)  gh_arch="x86_64" ;;
+    aarch64) gh_arch="aarch64" ;;
+    *)       gh_arch="$ARCH" ;;
+  esac
+
+  # git-delta
+  install_github_bin "dandavison/delta" "delta.*${gh_arch}-unknown-linux-gnu\\.tar\\.gz" "delta"
 
   # dust
-  install_github_bin "bootandy/dust" "dust.*aarch64-unknown-linux-gnu\\.tar\\.gz" "dust"
+  install_github_bin "bootandy/dust" "dust.*${gh_arch}-unknown-linux-gnu\\.tar\\.gz" "dust"
 
   # procs
-  install_github_bin "dalance/procs" "procs.*aarch64-linux\\.zip" "procs"
+  local procs_arch
+  case "$ARCH" in
+    x86_64)  procs_arch="x86_64-linux" ;;
+    aarch64) procs_arch="aarch64-linux" ;;
+    *)       procs_arch="$ARCH-linux" ;;
+  esac
+  install_github_bin "dalance/procs" "procs.*${procs_arch}\\.zip" "procs"
+
+  # yq (not in Ubuntu default repos)
+  local yq_arch
+  case "$ARCH" in
+    x86_64)  yq_arch="amd64" ;;
+    aarch64) yq_arch="arm64" ;;
+    *)       yq_arch="$ARCH" ;;
+  esac
+  if ! command -v yq &>/dev/null; then
+    info "Installing yq..."
+    local yq_url
+    yq_url=$(curl -sL "https://api.github.com/repos/mikefarah/yq/releases/latest" \
+      | grep -oP "\"browser_download_url\":\s*\"\\K[^\"]*yq_linux_${yq_arch}\"" | head -1) || true
+    if [[ -n "$yq_url" ]]; then
+      sudo curl -fsSL "$yq_url" -o /usr/local/bin/yq
+      sudo chmod 755 /usr/local/bin/yq
+    else
+      warn "Could not find yq release — install manually"
+    fi
+  fi
 
   # zoxide
   if ! command -v zoxide &>/dev/null; then
     info "Installing zoxide..."
     curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
-  fi
-
-  # fnm (Fast Node Manager) — for per-project node version management
-  if ! command -v fnm &>/dev/null; then
-    info "Installing fnm..."
-    curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell --install-dir "$HOME/.local/bin"
   fi
 
 

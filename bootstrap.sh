@@ -169,6 +169,8 @@ install_common() {
   ln -sf "$DOTFILES/emacs/.emacs"           "$HOME/.emacs"
   mkdir -p "$HOME/.config"
   ln -sf "$DOTFILES/starship/starship.toml" "$HOME/.config/starship.toml"
+  mkdir -p "$HOME/.claude"
+  ln -sf "$DOTFILES/CLAUDE.md"             "$HOME/.claude/CLAUDE.md"
 
   # Set zsh as default shell
   if [[ "$SHELL" != */zsh ]]; then

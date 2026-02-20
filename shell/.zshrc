@@ -45,7 +45,7 @@ export PATH="$HOME/.local/bin:$PATH"
 
 # Node Version Manager (fnm - fast alternative to nvm)
 if command -v fnm >/dev/null 2>&1; then
-  eval "$(fnm env --use-on-cd)"
+  eval "$(fnm env)"
 fi
 
 # NVM (uncomment if you prefer nvm over fnm)

@@ -103,6 +103,19 @@ install_dockge() {
   sudo docker compose -f /opt/dockge/compose.yaml up -d
 }
 
+# ─── Node.js 22 LTS (NodeSource) ─────────────────────
+install_node() {
+  if node --version 2>/dev/null | grep -q '^v22\.'; then
+    info "Node.js 22 already installed: $(node --version)"
+    return
+  fi
+
+  info "Installing Node.js 22 LTS via NodeSource..."
+  curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+  sudo apt-get install -y nodejs
+  info "Node.js installed: $(node --version)"
+}
+
 # ─── fnm (Fast Node Manager) ─────────────────────────
 install_fnm() {
   if command -v fnm &>/dev/null; then
@@ -120,7 +133,8 @@ install_docker
 install_caddy
 setup_stacks
 install_dockge
+install_node
 install_fnm
 
-info "Done! Swap, Docker, Caddy, Dockge, and fnm are installed."
-info "Verify with: docker --version, caddy version, curl localhost:5001"
+info "Done! Swap, Docker, Caddy, Dockge, Node.js 22, and fnm are installed."
+info "Verify with: docker --version, caddy version, curl localhost:5001, node --version"

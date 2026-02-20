@@ -38,7 +38,6 @@ alias myip='curl -s ifconfig.me'
 alias ports='lsof -i -P -n | grep LISTEN'
 
 #### HTTP (curl aliases replacing httpie) ####
-alias http='curl -s -H "Accept: application/json"'
 alias http-get='curl -s -H "Accept: application/json"'
 alias http-post='curl -s -X POST -H "Content-Type: application/json" -d'
 alias http-put='curl -s -X PUT -H "Content-Type: application/json" -d'

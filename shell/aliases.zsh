@@ -11,7 +11,7 @@ alias ....='cd ../../..'
 # Prefer eza/bat/rg when installed, but don’t break if missing.
 if command -v eza >/dev/null 2>&1; then
   alias ls='eza --icons'
-  alias ll='eza -lah --git --icons'
+  alias ll='eza -lah --git --group --icons'
   alias la='eza -a --icons'
   alias lt='eza --tree --level=2 --icons'
 fi

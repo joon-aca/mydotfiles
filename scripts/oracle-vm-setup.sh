@@ -79,8 +79,8 @@ fi
 # ── Git / GitHub config ───────────────────────────────────────────────────────
 if [[ -n "$GITHUB_USER" || -n "$GITHUB_EMAIL" ]]; then
     echo "[git] Configuring git for '$NEW_USER'"
-    sudo -u "$NEW_USER" git config --global user.name  "$GITHUB_USER"
-    sudo -u "$NEW_USER" git config --global user.email "$GITHUB_EMAIL"
+    ( cd "/home/$NEW_USER" && sudo -u "$NEW_USER" git config --global user.name  "$GITHUB_USER" )
+    ( cd "/home/$NEW_USER" && sudo -u "$NEW_USER" git config --global user.email "$GITHUB_EMAIL" )
     echo "[git] user.name=$GITHUB_USER  user.email=$GITHUB_EMAIL"
 else
     echo "[git] No GitHub details provided, skipping"

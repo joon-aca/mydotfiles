@@ -142,15 +142,14 @@ install_linux() {
   esac
   if ! command -v yq &>/dev/null; then
     info "Installing yq..."
-    local yq_url
-    yq_url=$(curl -sL "https://api.github.com/repos/mikefarah/yq/releases/latest" \
-      | grep -oP "\"browser_download_url\":\s*\"\\K[^\"]*yq_linux_${yq_arch}\"" | head -1) || true
-    if [[ -n "$yq_url" ]]; then
-      sudo curl -fsSL "$yq_url" -o /usr/local/bin/yq
-      sudo chmod 755 /usr/local/bin/yq
-    else
-      warn "Could not find yq release — install manually"
-    fi
+    info "Installing yq..."
+    local yq_url tmp
+    yq_url="https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${yq_arch}"
+    
+    tmp="$(mktemp)"
+    curl -fsSL "$yq_url" -o "$tmp"
+    sudo install -m 0755 "$tmp" /usr/local/bin/yq
+    rm -f "$tmp"
   fi
 
   # zoxide

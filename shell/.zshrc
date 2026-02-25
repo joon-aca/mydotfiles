@@ -36,7 +36,7 @@ elif [[ "$_OS" == "linux" && -d /home/linuxbrew/.linuxbrew ]]; then
 fi
 
 # CDPATH - directories to search when using cd
-export CDPATH=".:$HOME/dev/github"
+export CDPATH=".:$HOME/dev:$HOME/dev/github"
 
 # User binaries
 export PATH="$HOME/.local/bin:$PATH"

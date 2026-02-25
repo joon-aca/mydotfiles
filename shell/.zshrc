@@ -36,7 +36,8 @@ elif [[ "$_OS" == "linux" && -d /home/linuxbrew/.linuxbrew ]]; then
 fi
 
 # CDPATH - directories to search when using cd
-export CDPATH=".:$HOME/dev:$HOME/dev/github"
+export CDPATH=".:$HOME/dev:$HOME/dev/github:/opt"
+setopt CHASE_LINKS  # follow symlinks when cd-ing
 
 # User binaries
 export PATH="$HOME/.local/bin:$PATH"
@@ -122,3 +123,10 @@ bindkey '^I' tcsh_autolist
 #### LOAD YOUR FILES ####
 [ -f ~/.zsh/aliases.zsh ] && source ~/.zsh/aliases.zsh
 [ -f ~/.zsh/functions.zsh ] && source ~/.zsh/functions.zsh
+
+# bun completions
+[ -s "/home/ubuntu/.bun/_bun" ] && source "/home/ubuntu/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"

@@ -80,6 +80,9 @@ alias week='date +%V'
 # reload - Restart the shell
 alias reload="exec ${SHELL} -l"
 
+# rehash - Re-source .zshrc in the current shell
+alias rehash='source ~/.zshrc'
+
 #### OS-SPECIFIC UTILITIES ####
 
 if [[ "$_OS" == "mac" ]]; then

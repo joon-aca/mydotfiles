@@ -16,9 +16,8 @@ HISTFILE=~/.zsh_history
 autoload -Uz compinit
 compinit
 
-# Autocomplete options (kept from old - prevents aggressive tab completion)
+# Autocomplete options - noautomenu matches tcsh behavior (no cycling menu)
 setopt noautomenu
-setopt nomenucomplete
 
 #### OS DETECTION ####
 case "$(uname -s)" in

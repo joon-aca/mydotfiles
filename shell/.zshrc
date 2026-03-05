@@ -124,7 +124,7 @@ bindkey '^I' tcsh_autolist
 [ -f ~/.zsh/functions.zsh ] && source ~/.zsh/functions.zsh
 
 # bun completions
-[ -s "/home/ubuntu/.bun/_bun" ] && source "/home/ubuntu/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"

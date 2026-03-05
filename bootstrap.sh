@@ -198,6 +198,7 @@ setup_home() {
   ln -sf "$DOTFILES/starship/starship.toml" "$HOME/.config/starship.toml"
   mkdir -p "$HOME/.claude"
   ln -sf "$DOTFILES/CLAUDE.md"             "$HOME/.claude/CLAUDE.md"
+  ln -sf "$DOTFILES/.claude/settings.json" "$HOME/.claude/settings.json"
 
   # Set zsh as default shell
   if [[ "$SHELL" != */zsh ]]; then

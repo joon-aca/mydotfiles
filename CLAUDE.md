@@ -3,6 +3,9 @@
 ## Git commits
 - Do NOT add AI credits (`Co-Authored-By: Claude` or similar) to commit messages.
 
+## Tool usage
+- NEVER use the `-E` flag with `rg`. Extended regex is the default.
+
 ## Code quality
 - Focus on finding and fixing ROOT CAUSES, not symptoms. No hacky patches. No guesses.
 - No fake or hardcoded output — all CODE output must be real and derived from actual logic.

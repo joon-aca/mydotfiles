@@ -1,3 +1,6 @@
+## Tool usage
+- NEVER use the `-E` flag with `rg`. Extended regex is the default.
+
 ## Personal Preferences
 - I hate the 'main' branch naming I'm old-school master branch guy
 - my github account is joon-aca

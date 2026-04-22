@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sw_vers)",
+      "Bash(sw_vers:*)",
+      "Bash(vm_stat)",
+      "Bash(pmset -g)",
+      "Bash(pmset -g:*)",
+      "Bash(scutil --dns)",
+      "Bash(scutil --proxy)"
+    ]
+  }
+}

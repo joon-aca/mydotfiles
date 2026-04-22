@@ -30,6 +30,7 @@ brew "neovim"                        # Modern vim
 brew "emacs"                         # Text editor
 brew "jq"                            # JSON processor
 brew "yq"                            # YAML/XML processor
+brew "shfmt"                         # Shell formatter for Claude hook parsing
 brew "tree"                          # Directory tree viewer
 brew "watch"                         # Execute command periodically
 brew "pv"                            # Progress viewer for pipes

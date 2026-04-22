@@ -136,6 +136,14 @@ exec zsh
 
 The bootstrap script handles everything: package installation, config symlinking, shell change, and AI CLI tools. See `bootstrap.sh` for details.
 
+Claude Code is installed with a repo-managed global config. `bootstrap.sh` runs [`claude/install-claude.sh`](/Users/joon/mydotfiles/claude/install-claude.sh), which:
+
+* symlinks the compound Bash approval hook into `~/.claude/scripts/`
+* generates `~/.claude/settings.json` from repo-managed base + OS overlay + `~/.claude/settings.local.json`
+* keeps per-machine overrides out of git while preserving a shared safety policy
+
+The default Claude policy is intentionally stingy: it auto-approves clearly read-only inspection commands and leaves anything mutating, installing, deploying, or ambiguous to the normal permission prompt.
+
 ### Server setup (optional)
 
 For servers that need Docker, Caddy, and Dockge:
@@ -218,4 +226,3 @@ Configs are symlinked — edit in `~/mydotfiles`, changes apply immediately (res
 ## License
 
 MIT — use freely, customize as you like.
-

@@ -79,7 +79,7 @@ install_linux() {
     bat ripgrep fd-find fzf \
     tmux emacs-nox btop htop \
     git gh neovim \
-    jq tree watch pv nmap wget pipx \
+    jq shfmt tree watch pv nmap wget pipx \
     nodejs curl unzip
 
   # Symlink fd/bat naming quirks on Ubuntu
@@ -198,7 +198,6 @@ setup_home() {
   ln -sf "$DOTFILES/starship/starship.toml" "$HOME/.config/starship.toml"
   mkdir -p "$HOME/.claude"
   ln -sf "$DOTFILES/CLAUDE.md"             "$HOME/.claude/CLAUDE.md"
-  ln -sf "$DOTFILES/.claude/settings.json" "$HOME/.claude/settings.json"
 
   # Set zsh as default shell
   if [[ "$SHELL" != */zsh ]]; then
@@ -219,4 +218,9 @@ if [[ "${1:-}" != "--home-only" && "${1:-}" != "-h" ]]; then
     *)      error "Unsupported OS: $OS" ;;
   esac
   install_common
+  "$DOTFILES/claude/install-claude.sh"
+elif command -v jq &>/dev/null; then
+  "$DOTFILES/claude/install-claude.sh"
+else
+  warn "jq not found — skipping Claude settings generation. Re-run claude/install-claude.sh after installing jq."
 fi

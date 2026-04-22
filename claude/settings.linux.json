@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(systemctl status:*)",
+      "Bash(systemctl show:*)",
+      "Bash(systemctl list-units:*)",
+      "Bash(systemctl list-timers:*)",
+      "Bash(systemctl cat:*)",
+      "Bash(journalctl)",
+      "Bash(journalctl:*)",
+      "Bash(ss)",
+      "Bash(ss:*)",
+      "Bash(free)",
+      "Bash(free:*)"
+    ]
+  }
+}

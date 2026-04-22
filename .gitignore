@@ -11,6 +11,7 @@
 # Private settings (moved to ~/mysettings)
 iterm2/
 ssh/
+claude/.claude.json
 
 # macOS
 .DS_Store

@@ -70,6 +70,7 @@ main() {
   mkdir -p "$CLAUDE_DST_DIR" "$CLAUDE_SCRIPTS_DST" "$CLAUDE_BACKUP_DIR"
   chmod +x "$HOOK_SRC"
   ln -sfn "$HOOK_SRC" "$HOOK_DST"
+  ln -sf "$CLAUDE_SRC_DIR/CLAUDE.md" "$CLAUDE_DST_DIR/CLAUDE.md"
 
   local os_json=""
   case "$(uname -s)" in
@@ -103,6 +104,7 @@ main() {
   fi
 
   info "Installed Claude settings to $TARGET_JSON"
+  info "Linked CLAUDE.md at $CLAUDE_DST_DIR/CLAUDE.md"
   info "Linked hook script at $HOOK_DST"
   info "Local per-machine overrides can live in $LOCAL_JSON"
 }

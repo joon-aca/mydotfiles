@@ -201,6 +201,48 @@ collect_parsed_commands() {
   done < <(parse_compound "$input_command")
 }
 
+# normalize_git_globals — strip git's global flags so the *subcommand* is what
+# gets matched against the allowlist. Examples:
+#   git -C /path status         -> git status
+#   git -c user.email=x commit  -> git commit
+#   git --git-dir=foo log       -> git log
+# The first non-flag token is the subcommand, so a destructive verb like `rm`
+# stays visible to the matcher: `git -C /path rm` -> `git rm` (not allow-matched).
+normalize_git_globals() {
+  local cmd="$1"
+  if [[ "$cmd" != "git "* ]]; then
+    printf '%s\n' "$cmd"
+    return
+  fi
+
+  local -a tokens=()
+  read -r -a tokens <<< "$cmd"
+
+  local i=1 n=${#tokens[@]}
+  while (( i < n )); do
+    case "${tokens[i]}" in
+      # Globals that take a separate value token
+      -C|-c|--git-dir|--work-tree|--namespace|--super-prefix|--exec-path|--config-env|--attr-source)
+        (( i += 2 ))
+        ;;
+      # Globals with =value form
+      --git-dir=*|--work-tree=*|--namespace=*|--super-prefix=*|--exec-path=*|--config-env=*|--attr-source=*|--list-cmds=*)
+        (( i += 1 ))
+        ;;
+      # Boolean globals
+      -p|-P|--paginate|--no-pager|--bare|--no-replace-objects|--no-lazy-fetch|--no-optional-locks|--no-advice|--html-path|--man-path|--info-path)
+        (( i += 1 ))
+        ;;
+      *)
+        # First non-global token = subcommand. Emit it and the rest verbatim.
+        printf 'git %s\n' "${tokens[*]:i}"
+        return
+        ;;
+    esac
+  done
+  printf 'git\n'
+}
+
 strip_env_vars() {
   local full_command="$1"
   local stripped="$full_command"
@@ -211,6 +253,15 @@ strip_env_vars() {
 
   stripped_candidates=("$full_command")
   [[ "$stripped" != "$full_command" ]] && stripped_candidates+=("$stripped")
+
+  # Also try git-globals-normalized forms for each candidate, so allowlist
+  # entries like `Bash(git status)` cover `git -C /path status` too.
+  local original_count=${#stripped_candidates[@]} idx cand normalized
+  for (( idx = 0; idx < original_count; idx++ )); do
+    cand="${stripped_candidates[idx]}"
+    normalized=$(normalize_git_globals "$cand")
+    [[ "$normalized" != "$cand" ]] && stripped_candidates+=("$normalized")
+  done
 }
 
 matches_prefix_list() {

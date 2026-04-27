@@ -5,10 +5,8 @@
       "Read(*)",
       "Glob(*)",
       "Grep(*)",
-
       "Bash(pwd)",
       "Bash(cd *)",
-
       "Bash(ls)",
       "Bash(ls *)",
       "Bash(tree)",
@@ -18,7 +16,6 @@
       "Bash(file *)",
       "Bash(realpath *)",
       "Bash(readlink *)",
-
       "Bash(cat *)",
       "Bash(head *)",
       "Bash(tail *)",
@@ -31,12 +28,10 @@
       "Bash(wc *)",
       "Bash(jq *)",
       "Bash(yq *)",
-
       "Bash(grep *)",
       "Bash(ggrep *)",
       "Bash(rg *)",
       "Bash(ag *)",
-
       "Bash(ps)",
       "Bash(ps *)",
       "Bash(pgrep *)",
@@ -73,7 +68,6 @@
       "Bash(date *)",
       "Bash(which *)",
       "Bash(type *)",
-
       "Bash(dig *)",
       "Bash(nslookup *)",
       "Bash(getent *)",
@@ -81,7 +75,6 @@
       "Bash(ping *)",
       "Bash(traceroute *)",
       "Bash(tracepath *)",
-
       "Bash(systemctl status *)",
       "Bash(systemctl show *)",
       "Bash(systemctl list-units *)",
@@ -89,7 +82,6 @@
       "Bash(systemctl cat *)",
       "Bash(journalctl)",
       "Bash(journalctl *)",
-
       "Bash(docker ps)",
       "Bash(docker ps *)",
       "Bash(docker images)",
@@ -106,7 +98,6 @@
       "Bash(docker network ls *)",
       "Bash(docker volume ls)",
       "Bash(docker volume ls *)",
-
       "Bash(git status)",
       "Bash(git status *)",
       "Bash(git diff)",
@@ -125,7 +116,6 @@
       "Bash(git grep *)",
       "Bash(git reflog)",
       "Bash(git reflog *)",
-
       "Bash(* --help)",
       "Bash(* --help *)",
       "Bash(* -h)",
@@ -137,5 +127,7 @@
       "Bash(* -v)",
       "Bash(* -v *)"
     ]
-  }
+  },
+  "model": "opus",
+  "effortLevel": "medium"
 }

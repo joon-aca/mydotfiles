@@ -63,35 +63,21 @@ install_mac() {
   # Git credential helper
   git config --global credential.helper osxkeychain
 
-  # SSH config: inject mysettings Include if not already present.
-  # PREPENDED intentionally — OpenSSH silently ignores Host blocks in Include
-  # files that appear after Host blocks in the parent file. Include must come
-  # first. Add local host overrides AFTER this Include in ~/.ssh/config.
-  mkdir -p "$HOME/.ssh"
-  chmod 700 "$HOME/.ssh"
-  if [ -L "$HOME/.ssh/config" ]; then
-    warn "~/.ssh/config is a symlink — replacing with a real file to preserve local config"
-    rm "$HOME/.ssh/config"
-  fi
-  if [ ! -f "$HOME/.ssh/config" ]; then
-    touch "$HOME/.ssh/config"
-    chmod 600 "$HOME/.ssh/config"
-  fi
-  if ! grep -q ".mysettings/ssh/config" "$HOME/.ssh/config"; then
-    local tmp
-    tmp=$(mktemp)
-    printf '# Shared remote servers (requires ~/mysettings checkout)\nInclude ~/.mysettings/ssh/config\n\n' > "$tmp"
-    cat "$HOME/.ssh/config" >> "$tmp"
-    mv "$tmp" "$HOME/.ssh/config"
-    chmod 600 "$HOME/.ssh/config"
-    info "Added mysettings SSH include to ~/.ssh/config"
-  fi
-
   # iTerm2 Dynamic Profiles: symlink each profile JSON (macOS only)
   mkdir -p "$HOME/Library/Application Support/iTerm2/DynamicProfiles"
   for profile in "$DOTFILES/iterm/DynamicProfiles/"*.json; do
     ln -sf "$profile" "$HOME/Library/Application Support/iTerm2/DynamicProfiles/$(basename "$profile")"
   done
+
+  # SSH identity is provisioned separately by macos-ssh-vault.
+  # Only show the hint if the vault hasn't already been deployed here.
+  if [ ! -f "$HOME/.ssh/.ssh-vault-marker" ]; then
+    echo ""
+    warn "SSH identity (config + keys) is not yet provisioned on this machine."
+    info "Next step — run macos-ssh-vault to deploy from your encrypted iCloud vault:"
+    info "    git clone git@github.com:joon-aca/macos-ssh-vault.git ~/.macos-ssh-vault"
+    info "    ~/.macos-ssh-vault/bootstrap ssh-canonical"
+  fi
 }
 
 # ─── Linux ───────────────────────────────────────────

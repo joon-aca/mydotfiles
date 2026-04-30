@@ -128,13 +128,25 @@ Great for debugging load, heat, and performance behavior.
 Works on **macOS** (Homebrew) and **Ubuntu/Debian** (apt + targeted installs).
 
 ```bash
-git clone git@github.com:joon-aca/mydotfiles.git ~/mydotfiles
-cd ~/mydotfiles
-./bootstrap.sh
+git clone git@github.com:joon-aca/mydotfiles.git ~/.mydotfiles
+~/.mydotfiles/bootstrap.sh
 exec zsh
 ```
 
 The bootstrap script handles everything: package installation, config symlinking, shell change, and AI CLI tools. See `bootstrap.sh` for details.
+
+### 🔐 SSH identity — provisioned separately
+
+This repo intentionally does **not** manage `~/.ssh`. SSH config and private keys are deployed by **[`macos-ssh-vault`](https://github.com/joon-aca/macos-ssh-vault)** from an AES-256 encrypted sparsebundle in iCloud Drive.
+
+After `bootstrap.sh` runs, it will print a reminder to provision SSH:
+
+```bash
+git clone git@github.com:joon-aca/macos-ssh-vault.git ~/.macos-ssh-vault
+~/.macos-ssh-vault/bootstrap ssh-canonical
+```
+
+This is macOS-only. Linux servers don't get the vault — they only need `mydotfiles`.
 
 Claude Code is installed with a repo-managed global config. `bootstrap.sh` runs [`claude/install-claude.sh`](/Users/joon/mydotfiles/claude/install-claude.sh), which:
 

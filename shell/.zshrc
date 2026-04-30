@@ -50,9 +50,10 @@ export PATH="$HOME/.local/bin:$PATH"
 #### ENVIRONMENT / TOOLING ####
 
 # Node Version Manager (fnm - fast alternative to nvm)
-if command -v fnm >/dev/null 2>&1; then
-  eval "$(fnm env)"
-fi
+# Guard: FNM_MULTISHELL_PATH is exported by fnm env, skip if already initialized
+# if command -v fnm >/dev/null 2>&1 && [[ -z "$FNM_MULTISHELL_PATH" ]]; then
+#   eval "$(fnm env)"
+# fi
 
 # NVM (uncomment if you prefer nvm over fnm)
 # export NVM_DIR="$HOME/.nvm"

@@ -1,0 +1,18 @@
+{
+  "Profiles": [
+    {
+      "Name": "sparky",
+      "Guid": "E1A27AD1-AB65-4943-9864-198C9ACA553E",
+      "Tags": ["local"],
+      "Custom Command": "Yes",
+      "Command": "ssh sparky"
+    },
+    {
+      "Name": "joon-mbp",
+      "Guid": "A5646AB0-9CCC-4143-AAA3-A4A92B58F53E",
+      "Tags": ["local"],
+      "Custom Command": "Yes",
+      "Command": "ssh joon-mbp"
+    }
+  ]
+}

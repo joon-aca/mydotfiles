@@ -146,4 +146,4 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 [[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh"
 
 # OpenClaw Completion
-source "/Users/joon/.openclaw/completions/openclaw.zsh"
+[[ -f "${HOME}/.openclaw/completions/openclaw.zsh" ]] && source "${HOME}/.openclaw/completions/openclaw.zsh"

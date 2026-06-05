@@ -158,7 +158,6 @@ install_linux() {
   esac
   if ! command -v yq &>/dev/null; then
     info "Installing yq..."
-    info "Installing yq..."
     local yq_url tmp
     yq_url="https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${yq_arch}"
     
@@ -208,6 +207,8 @@ setup_home() {
   ln -sf "$DOTFILES/shell/aliases.zsh"      "$HOME/.zsh/aliases.zsh"
   ln -sf "$DOTFILES/shell/functions.zsh"    "$HOME/.zsh/functions.zsh"
   ln -sf "$DOTFILES/git/.gitconfig"         "$HOME/.gitconfig"
+  mkdir -p "$HOME/.config/git"
+  ln -sf "$DOTFILES/git/gitignore_home"     "$HOME/.config/git/ignore"
   ln -sf "$DOTFILES/tmux/.tmux.conf"        "$HOME/.tmux.conf"
   ln -sf "$DOTFILES/emacs/.emacs"           "$HOME/.emacs"
   mkdir -p "$HOME/.config"

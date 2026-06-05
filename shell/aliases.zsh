@@ -2,6 +2,7 @@
 alias c='clear'
 alias h='history'
 alias q='exit'
+alias claude6='claude --model claude-opus-4-6'
 
 alias ..='cd ..'
 alias ...='cd ../..'

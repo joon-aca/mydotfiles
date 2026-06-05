@@ -2,6 +2,7 @@
 
 ## Git commits
 - Do NOT add AI credits (`Co-Authored-By: Claude` or similar) to commit messages.
+- Group commits logically when it makes sense — e.g. keep tests in a separate commit from implementation, but don't be rigid about it.
 
 ## Tool usage
 - NEVER use the `-E` flag with `rg`. Extended regex is the default.

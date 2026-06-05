@@ -49,6 +49,8 @@ export PATH="$HOME/.local/bin:$PATH"
 
 #### ENVIRONMENT / TOOLING ####
 
+export CLAUDE_MODEL='claude-opus-4-6'
+
 # Node Version Manager (fnm - fast alternative to nvm)
 # Guard: FNM_MULTISHELL_PATH is exported by fnm env, skip if already initialized
 # if command -v fnm >/dev/null 2>&1 && [[ -z "$FNM_MULTISHELL_PATH" ]]; then
@@ -72,9 +74,6 @@ export PATH="$HOME/.local/bin:$PATH"
 
 #### MODERN CLI INTEGRATIONS ####
 
-# Starship prompt - must be at the end of the file
-eval "$(starship init zsh)"
-
 # zoxide - smarter cd
 eval "$(zoxide init zsh)"
 
@@ -85,6 +84,9 @@ elif [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]; then
   source /usr/share/doc/fzf/examples/key-bindings.zsh
   [ -f /usr/share/doc/fzf/examples/completion.zsh ] && source /usr/share/doc/fzf/examples/completion.zsh
 fi
+
+# Starship prompt - must be at the end of the file
+eval "$(starship init zsh)"
 
 # fzf default options
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
@@ -147,3 +149,6 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 # OpenClaw Completion
 source "/Users/joon/.openclaw/completions/openclaw.zsh"
+
+# opencode
+export PATH=/Users/joon/.opencode/bin:$PATH

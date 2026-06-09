@@ -75,7 +75,7 @@ export CLAUDE_MODEL='claude-opus-4-6'
 #### MODERN CLI INTEGRATIONS ####
 
 # zoxide - smarter cd
-eval "$(zoxide init zsh)"
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 
 # fzf - fuzzy finder
 if [ -f ~/.fzf.zsh ]; then
@@ -86,7 +86,7 @@ elif [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]; then
 fi
 
 # Starship prompt - must be at the end of the file
-eval "$(starship init zsh)"
+command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
 
 # fzf default options
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
@@ -148,7 +148,7 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 [[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh"
 
 # OpenClaw Completion
-source "/Users/joon/.openclaw/completions/openclaw.zsh"
+[[ "$_OS" == "mac" ]] && source "/Users/joon/.openclaw/completions/openclaw.zsh"
 
 # opencode
-export PATH=/Users/joon/.opencode/bin:$PATH
+[[ "$_OS" == "mac" ]] && export PATH=/Users/joon/.opencode/bin:$PATH

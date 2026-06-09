@@ -120,3 +120,6 @@
 	fc = "!git log --all -S"
 [credential]
 	helper = store
+[safe]
+	directory = /opt/stacks/sammy-lpb
+	directory = /opt/stacks/katraka-website

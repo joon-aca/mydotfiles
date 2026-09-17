@@ -55,7 +55,7 @@ Drop their public key into `authorized_keys` when you have it:
 echo "ssh-ed25519 AAAA... dreu@laptop" | sudo tee -a /home/"$NEWUSER"/.ssh/authorized_keys
 ```
 
-## 2. Deploy write access — a `deployers` group with recursive ACL
+## 2. Deploy write access — a `deploy` group with recursive ACL
 
 **This is a team box** — deployers need to be able to fix/update each
 other's live projects, not just their own. A plain per-user ACL scoped to
@@ -69,17 +69,17 @@ the root-equivalent socket.
 ```bash
 sudo apt-get install -y acl   # only libacl1 ships by default; the CLI tools don't
 
-getent group deployers || sudo groupadd deployers
-sudo usermod -aG deployers "$NEWUSER"
+getent group deploy || sudo groupadd deploy
+sudo usermod -aG deploy "$NEWUSER"
 
 # one-time per server: wire the group into the deploy roots
-sudo setfacl -R -m g:deployers:rwx /opt/sites /opt/stacks
-sudo setfacl -R -d -m g:deployers:rwx /opt/sites /opt/stacks
+sudo setfacl -R -m g:deploy:rwx /opt/sites /opt/stacks
+sudo setfacl -R -d -m g:deploy:rwx /opt/sites /opt/stacks
 ```
 
 The recursive `-m` covers files/dirs that already exist; the recursive
 `-d` (default ACL) makes every *future* file or directory created anywhere
-under `/opt/sites`/`/opt/stacks` — by anyone — inherit `deployers` group
+under `/opt/sites`/`/opt/stacks` — by anyone — inherit `deploy` group
 access automatically. Run the two `setfacl` lines once per server; after
 that, onboarding a new deployer is just the `groupadd`-if-missing +
 `usermod` above.
@@ -89,7 +89,7 @@ Verify against a project that already exists and belongs to someone else
 case):
 
 ```bash
-getfacl /opt/stacks/<some-existing-project-you-dont-own> | grep -E "^# file|^group:deployers"
+getfacl /opt/stacks/<some-existing-project-you-dont-own> | grep -E "^# file|^group:deploy"
 sudo -u "$NEWUSER" touch /opt/stacks/<that-project>/.write-test && echo OK && sudo rm /opt/stacks/<that-project>/.write-test
 ```
 
@@ -226,14 +226,14 @@ sudo visudo -c -f /etc/sudoers.d/"$NEWUSER"
 ## 6. Verify
 
 ```bash
-id "$NEWUSER"                 # expect: deployers + caddy, NOT docker, NOT sudo/wheel
+id "$NEWUSER"                 # expect: deploy + caddy, NOT docker, NOT sudo/wheel
 sudo -l -U "$NEWUSER"         # expect: only deploy-restart + the caddy commands
 ```
 
 Prove it actually works end-to-end before handing over the account — test
 against your **own throwaway project**, then separately against an
 **existing teammate's live project**, since that second case is the whole
-point of the `deployers` group and a self-created dir won't catch a bad ACL:
+point of the `deploy` group and a self-created dir won't catch a bad ACL:
 
 ```bash
 sudo -u "$NEWUSER" bash -c 'mkdir -p /opt/sites/smoketest && cd $_ && cat > docker-compose.yml <<EOF
@@ -266,7 +266,7 @@ who are *not* being downgraded, don't delete the whole file — edit the
 sudo visudo -f /etc/sudoers.d/<the-shared-file>
 ```
 
-Then run steps 2–5 above for them (the `deployers`/`caddy` group setup is
+Then run steps 2–5 above for them (the `deploy`/`caddy` group setup is
 idempotent — safe to run against an existing user).
 
 Confirm their actual deploy workflow first (which projects, which compose

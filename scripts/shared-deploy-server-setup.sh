@@ -3,7 +3,8 @@
 #
 # Turns a server that already has baseline infra (../server-setup.sh —
 # Docker, Caddy, /opt/stacks, Dockge) into a shared multi-user deploy
-# machine: installs the docker-escape-watch backstop.
+# machine: installs the docker-escape-watch backstop and the /opt/stacks
+# README aimed at deploy accounts.
 #
 # This is a separate layer on purpose — not every server with Docker on it
 # is meant to have multiple deploy accounts in the docker group. Only run
@@ -51,7 +52,18 @@ install_escape_watch() {
   sudo docker rm -f escape-watch-selftest &>/dev/null || true
 }
 
+# ─── /opt/stacks README (deployer-facing docs) ───────
+install_stacks_readme() {
+  [[ -d /opt/stacks ]] || error "/opt/stacks not found — run server-setup.sh first"
+
+  info "Installing /opt/stacks/README.md..."
+  sudo cp "$SCRIPT_DIR/stacks-README.md" /opt/stacks/README.md
+  sudo chown root:docker /opt/stacks/README.md
+  sudo chmod 664 /opt/stacks/README.md
+}
+
 install_escape_watch
+install_stacks_readme
 
 info "Done. This server is set up as a shared deploy machine."
 info "Provision each deploy account: sudo ./oracle-vm-setup.sh <username> deploy"

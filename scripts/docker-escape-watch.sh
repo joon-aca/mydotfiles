@@ -38,6 +38,9 @@ while read -r cid; do
   done
 
   if [[ -n "$flag" ]]; then
-    log "SUSPICIOUS container create id=${cid:0:12} image=$image flags=[$flag]"
+    # Docker doesn't tell us which OS user ran the command, so capture who's
+    # logged in right now as a best-effort correlation hint — not proof.
+    sessions=$(who | awk '{printf "%s@%s%s ", $1, $2, $5}')
+    log "SUSPICIOUS container create id=${cid:0:12} image=$image flags=[$flag] logged_in=[${sessions% }]"
   fi
 done

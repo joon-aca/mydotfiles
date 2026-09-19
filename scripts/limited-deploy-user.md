@@ -10,6 +10,20 @@ prod project, that new projects auto-inherit the same access, that
 `docker` access is denied throughout. Also used to downgrade three existing
 full-sudo/docker-group users without breaking their live prod deploy.
 
+## Status / known limitation
+
+`deploy-restart` (step 4) covers `up`/`build`/`down`/`restart`/`pull`/`logs`
+scoped to one project — enough for "deploy and keep it running," not enough
+for interactive debugging (no `exec`, no live-following logs, no `ps`
+across projects). Hand-extending a root-run wrapper script every time
+someone needs one more docker verb is a maintenance liability, not a
+long-term interface — treat it as a stopgap. The structural fixes are
+rootless Docker (real fix, but a daemon migration — check bind-mounted
+volumes for UID-remap fallout first) or a docker-socket-proxy filtering the
+real API by verb (prevents the group escalation below without migrating
+anything). Neither is set up here yet; this recipe is still the "cheap
+enough to actually deploy today" version.
+
 ## Why not just add them to `docker` group
 
 That was the first draft of this recipe and it's wrong — don't do it.
@@ -276,3 +290,43 @@ get the "it's broken" call. Prove it *didn't* break anything by testing the
 downgraded user against a real live project they actually run (see the
 `deploy-restart ... logs` check in step 6) before considering it done —
 don't just trust that removing access "should" be fine.
+
+## Backstop: detect docker-group escape attempts
+
+`docker` group membership isn't a separate vulnerability that leads to
+root — it *is* root, by design (anyone who can talk to the daemon socket
+can ask it to mount `/` into a container it then runs as root). There's no
+partial-trust tier built into the Docker API itself. If anyone on a box
+still has `docker` group (admins who need it, or before you've migrated
+everyone off it), `scripts/docker-escape-watch.sh` is a cheap detection
+backstop — not prevention, and it doesn't record *which* user issued the
+command (Docker's event log doesn't carry that), just that a container
+matching the escape pattern got created.
+
+It watches `docker events` for container creates and flags anything with
+`--privileged`, `pid=host`, `net=host`, a dangerous `cap_add`
+(`SYS_ADMIN`/`ALL`), or a bind mount to `/`, `/etc`, `/root`, `/home`, or
+the docker socket. Logs via `logger` to the journal, tag
+`docker-escape-watch`. Idle CPU, ~8MB RSS, hard-capped at 50MB.
+
+Install on a new server:
+
+```bash
+sudo cp scripts/docker-escape-watch.sh /usr/local/sbin/docker-escape-watch
+sudo chown root:root /usr/local/sbin/docker-escape-watch
+sudo chmod 755 /usr/local/sbin/docker-escape-watch
+
+sudo cp scripts/docker-escape-watch.service /etc/systemd/system/docker-escape-watch.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now docker-escape-watch
+```
+
+Verify it actually fires before trusting it — don't just check the service
+is "active":
+
+```bash
+sudo docker run --rm -d --name escapetest -v /:/host alpine sleep 1
+sleep 2
+sudo journalctl -t docker-escape-watch -n 5 --no-pager   # expect a SUSPICIOUS line
+sudo docker rm -f escapetest
+```

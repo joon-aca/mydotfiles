@@ -26,13 +26,25 @@ command -v docker &>/dev/null || error "Docker not found — run server-setup.sh
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
 # ─── docker-escape-watch (detection backstop) ────────
+# Always re-syncs the script/unit from the repo and restarts, even if the
+# service is already running — otherwise re-running this after updating
+# docker-escape-watch.sh silently keeps serving the stale version.
 install_escape_watch() {
-  if systemctl is-active --quiet docker-escape-watch 2>/dev/null; then
-    info "docker-escape-watch already running"
+  local changed=""
+
+  if ! sudo cmp -s "$SCRIPT_DIR/docker-escape-watch.sh" /usr/local/sbin/docker-escape-watch 2>/dev/null; then
+    changed=1
+  fi
+  if ! sudo cmp -s "$SCRIPT_DIR/docker-escape-watch.service" /etc/systemd/system/docker-escape-watch.service 2>/dev/null; then
+    changed=1
+  fi
+
+  if [[ -z "$changed" ]] && systemctl is-active --quiet docker-escape-watch 2>/dev/null; then
+    info "docker-escape-watch already up to date and running"
     return
   fi
 
-  info "Installing docker-escape-watch..."
+  info "Installing/updating docker-escape-watch..."
   sudo cp "$SCRIPT_DIR/docker-escape-watch.sh" /usr/local/sbin/docker-escape-watch
   sudo chown root:root /usr/local/sbin/docker-escape-watch
   sudo chmod 755 /usr/local/sbin/docker-escape-watch
@@ -40,6 +52,7 @@ install_escape_watch() {
   sudo cp "$SCRIPT_DIR/docker-escape-watch.service" /etc/systemd/system/docker-escape-watch.service
   sudo systemctl daemon-reload
   sudo systemctl enable --now docker-escape-watch
+  sudo systemctl restart docker-escape-watch
 
   info "Verifying it actually fires..."
   sudo docker run --rm -d --name escape-watch-selftest -v /:/host alpine sleep 1 &>/dev/null

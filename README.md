@@ -158,13 +158,29 @@ The default Claude policy is intentionally stingy: it auto-approves clearly read
 
 ### Server setup (optional)
 
-For servers that need Docker, Caddy, and Dockge:
+Two layers — baseline infra applies to any server, the shared-deploy layer
+only to boxes multiple people deploy to (e.g. lando, vader, leia).
+
+**Baseline** — Docker, Caddy, Dockge, swap, Node.js:
 
 ```bash
 ./server-setup.sh
 ```
 
 This installs Docker (official apt repo), Caddy (official apt repo), sets up `/opt/stacks` with setgid docker, and deploys Dockge to `/opt/dockge`.
+
+**Shared deploy machine** — only if this server will have multiple deploy
+accounts in the `docker` group. Installs the `docker-escape-watch` backstop
+(logs the classic docker-group → host-root escape pattern if anyone ever
+hits it — detection, not prevention):
+
+```bash
+./scripts/shared-deploy-server-setup.sh
+```
+
+Then provision each account with `./scripts/oracle-vm-setup.sh <username> deploy`
+(vs. plain `admin` role for full-sudo accounts like yourself). Full access
+model and the reasoning behind it: `scripts/limited-deploy-user.md`.
 
 ---
 

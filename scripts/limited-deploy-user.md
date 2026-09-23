@@ -92,22 +92,44 @@ sudo chgrp caddy /etc/caddy/conf.d
 sudo chmod 2775 /etc/caddy/conf.d
 ```
 
-Caddy reload doesn't need root at all if you grant it directly — it's not
-docker-socket-equivalent, so a normal scoped sudoers entry is fine and
-worth keeping regardless of docker group:
+Service control doesn't need root-equivalence if you grant it directly — it's
+not docker-socket-equivalent, so a scoped sudoers entry is fine and worth
+keeping regardless of docker group.
 
-```bash
-sudo visudo -f /etc/sudoers.d/"$NEWUSER"
-```
+**Grant it by group, not per user.** Per-user files in `/etc/sudoers.d/` drift:
+on lando they reached the point where a full-root grant for one admin sat in a
+file named `deploy-scoped`, and nobody could tell from the directory listing
+who held what. Two groups, two files, membership is the grant:
+
+| Class | Group | File | Grant |
+| --- | --- | --- | --- |
+| sysadmin | `sysadmin` | `30-sysadmin` | `ALL=(ALL) NOPASSWD:ALL` |
+| deploy | `deploy` | `20-deploy` | `systemctl` on any unit except a protected list |
+
+Numbered so `30-sysadmin` sorts last: `sudoers.d` is read lexically and the
+last match wins, so anyone in both groups keeps full root rather than being
+silently restricted.
+
+**Use a deny-list, not an allow-list.** Every unit permitted except a short
+protected list (docker, ssh, fail2ban, `systemd-*`, the escape watcher), so a
+new project needs no sudoers edit. Enumerating allowed units means an edit per
+project, and the obvious shorthand is unsafe: sudoers matches arguments as
+**one concatenated string**, so `/usr/bin/systemctl stop sammy-*` also matches
+`stop sammy-foo docker`. See `sudoers(5)`, "Wildcards".
+
+Exclude `edit`, `link`, `mask` and `set-property` — each loads or rewrites a
+unit file and runs it as root.
 
 ```
-dreu ALL=(root) NOPASSWD: /usr/bin/caddy validate --config /etc/caddy/Caddyfile, /usr/bin/systemctl reload caddy, /usr/bin/systemctl restart caddy
+%deploy   ALL=(root) NOPASSWD: SYSTEMCTL_MANAGE, SYSTEMCTL_READ, !PROTECTED, !FOOTGUNS
+%sysadmin ALL=(ALL) NOPASSWD: ALL
 ```
 
-```bash
-sudo chmod 440 /etc/sudoers.d/"$NEWUSER"
-sudo visudo -c -f /etc/sudoers.d/"$NEWUSER"
-```
+Validate with `visudo -cqf` on a temp file **before** installing — a malformed
+file in `sudoers.d` breaks sudo for everyone, including whoever is fixing it.
+
+Note this grants `systemctl` broadly, not a wrapper. See the history note at
+the end of this file: the wrapper approach was tried and backed out.
 
 ## 4. Detection backstop — docker-escape-watch
 

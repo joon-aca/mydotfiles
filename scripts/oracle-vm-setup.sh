@@ -61,23 +61,29 @@ else
     useradd -m -s "$ZSH_PATH" "$NEW_USER"
 fi
 
-# ── Sudo ──────────────────────────────────────────────────────────────────────
-SUDOERS_FILE="/etc/sudoers.d/$NEW_USER"
+# ── Sudo — by group, never per user ───────────────────────────────────────────
+# Group membership IS the grant. Per-user files in /etc/sudoers.d/ drift: on
+# lando they reached the point where a full-root grant for one admin sat in a
+# file named `deploy-scoped`, unreadable from the directory listing. Promoting
+# or demoting someone is now a group change, not a file hunt.
+#
+# The group rules themselves live in 20-deploy / 30-sysadmin, installed once
+# per server by shared-deploy-server-setup.sh. This script only adds members.
+GROUP_FOR_ROLE="deploy"
+[[ "$ROLE" == "admin" ]] && GROUP_FOR_ROLE="sysadmin"
 
-if [[ "$ROLE" == "admin" ]]; then
-    echo "[sudo] role=admin — writing full NOPASSWD sudo to $SUDOERS_FILE"
-    echo "$NEW_USER ALL=(ALL) NOPASSWD:ALL" > "$SUDOERS_FILE"
-    chmod 440 "$SUDOERS_FILE"
-else
-    echo "[sudo] role=deploy — no full sudo grant"
-    if getent group caddy &>/dev/null; then
-        echo "[sudo] Writing scoped Caddy reload/validate grant to $SUDOERS_FILE"
-        echo "$NEW_USER ALL=(root) NOPASSWD: /usr/bin/caddy validate --config /etc/caddy/Caddyfile, /usr/bin/systemctl reload caddy, /usr/bin/systemctl restart caddy" > "$SUDOERS_FILE"
-        chmod 440 "$SUDOERS_FILE"
-        visudo -c -f "$SUDOERS_FILE"
-    else
-        echo "[sudo] caddy group not found, skipping scoped grant"
-    fi
+if ! getent group "$GROUP_FOR_ROLE" &>/dev/null; then
+    echo "[sudo] group '$GROUP_FOR_ROLE' not found — run shared-deploy-server-setup.sh first"
+    exit 1
+fi
+
+echo "[sudo] role=$ROLE — adding '$NEW_USER' to '$GROUP_FOR_ROLE' group"
+usermod -aG "$GROUP_FOR_ROLE" "$NEW_USER"
+
+if [[ -f "/etc/sudoers.d/$NEW_USER" ]]; then
+    echo "[sudo] WARNING: stale per-user file /etc/sudoers.d/$NEW_USER exists."
+    echo "[sudo]          The group grant supersedes it. Verify with"
+    echo "[sudo]          'sudo -l -U $NEW_USER', then remove it."
 fi
 
 # ── Docker group ──────────────────────────────────────────────────────────────

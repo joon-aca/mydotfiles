@@ -118,8 +118,10 @@
 
 	# Find commits by code change
 	fc = "!git log --all -S"
-[credential]
-	helper = store
 [safe]
 	directory = /opt/stacks/sammy-lpb
 	directory = /opt/stacks/katraka-website
+
+# Credentials stay out of this file. bootstrap writes ~/.config/git/config.local.
+[include]
+	path = ~/.config/git/config.local

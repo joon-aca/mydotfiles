@@ -1,8 +1,9 @@
 # Starship Prompt Configuration
 # Install location: ~/.config/starship.toml
 
-# Use custom format
-format = "$username$hostname$directory$git_branch$git_status $character"
+# Custom format has to name every module that should appear.
+# Language, duration, and clock blocks below were previously configured and never shown.
+format = "$username$hostname$directory$git_branch$git_status$git_state $nodejs$python$rust$golang$package$cmd_duration$time$character"
 
 # Add a blank line between shell prompts
 add_newline = true

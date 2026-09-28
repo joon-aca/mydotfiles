@@ -20,62 +20,42 @@ HISTFILE=~/.zsh_history
 
 #### COMPLETION ####
 autoload -Uz compinit
-compinit
+zmodload -F zsh/stat b:zstat
+_compdump="${ZDOTDIR:-$HOME}/.zcompdump"
+if [[ ! -s $_compdump ]]; then
+  compinit
+else
+  # Rebuild the dump at most daily. compinit -C skips the security check.
+  _comp_age=$(( EPOCHSECONDS - $(zstat +mtime "$_compdump") ))
+  if (( _comp_age > 86400 )); then
+    compinit
+  else
+    compinit -C
+  fi
+fi
+unset _compdump _comp_age
 
 # Autocomplete options - noautomenu matches tcsh behavior (no cycling menu)
 setopt noautomenu
 
-#### OS DETECTION ####
-case "$(uname -s)" in
-  Darwin) _OS="mac" ;;
-  Linux)  _OS="linux" ;;
-esac
+# Follow symlinks when cd-ing
+setopt CHASE_LINKS
 
-#### PATH / CDPATH ####
-if [[ "$_OS" == "mac" ]]; then
-  export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
-  _BREW_PREFIX="/opt/homebrew"
-elif [[ "$_OS" == "linux" && -d /home/linuxbrew/.linuxbrew ]]; then
-  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-  _BREW_PREFIX="/home/linuxbrew/.linuxbrew"
-fi
-
-# CDPATH - directories to search when using cd
-export CDPATH=".:$HOME/dev:$HOME/dev/github:/opt:/opt/stacks"
-setopt CHASE_LINKS  # follow symlinks when cd-ing
-
-# User binaries
-export PATH="$HOME/.local/bin:$PATH"
-
-#### ENVIRONMENT / TOOLING ####
-
-export CLAUDE_MODEL='claude-opus-4-6'
-
-# Node Version Manager (fnm - fast alternative to nvm)
-# Guard: FNM_MULTISHELL_PATH is exported by fnm env, skip if already initialized
-# if command -v fnm >/dev/null 2>&1 && [[ -z "$FNM_MULTISHELL_PATH" ]]; then
-#   eval "$(fnm env)"
-# fi
-
-# NVM (uncomment if you prefer nvm over fnm)
-# export NVM_DIR="$HOME/.nvm"
-# [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
-# [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
-#
-# # Auto-use .nvmrc if present
-# autoload -U add-zsh-hook
-# load-nvmrc() {
-#   if [[ -f .nvmrc && -r .nvmrc ]]; then
-#     nvm use --silent 2>/dev/null
-#   fi
-# }
-# add-zsh-hook chpwd load-nvmrc
-# load-nvmrc
+#### SHARED ENVIRONMENT ####
+_here="${(%):-%N}"
+[[ -L $_here ]] && _here="$(readlink "$_here")"
+_SHELL_DIR="${_here:h}"
+unset _here
+source "$_SHELL_DIR/common.sh"
+# First occurrence wins, so a second `source ~/.zshrc` does not grow PATH.
+typeset -U path
 
 #### MODERN CLI INTEGRATIONS ####
 
 # zoxide - smarter cd
-command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init zsh)"
+fi
 
 # fzf - fuzzy finder
 if [ -f ~/.fzf.zsh ]; then
@@ -85,18 +65,18 @@ elif [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]; then
   [ -f /usr/share/doc/fzf/examples/completion.zsh ] && source /usr/share/doc/fzf/examples/completion.zsh
 fi
 
-# Starship prompt - must be at the end of the file
-command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
+# fzf steals ctrl-t for file search, clobbering the standard emacs
+# transpose-chars binding. Restore ctrl-t and move file search to ctrl-q,
+# an obscure default (push-line) nobody uses.
+if (( $+widgets[fzf-file-widget] )); then
+  bindkey '^T' transpose-chars
+  bindkey '^Q' fzf-file-widget
+fi
 
-# fzf default options
-export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
-export FZF_DEFAULT_OPTS="
-  --height 40% --layout=reverse --border
-  --preview 'bat --color=always --style=numbers --line-range=:500 {}'
-  --preview-window 'right:60%:wrap'
-  --bind 'ctrl-/:toggle-preview'
-"
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+# Starship prompt. Syntax highlighting is sourced later, and wants to stay near the end.
+if command -v starship >/dev/null 2>&1; then
+  eval "$(starship init zsh)"
+fi
 
 #### ZSH PLUGINS ####
 
@@ -107,13 +87,6 @@ elif [ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
   source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 fi
 bindkey '^[[Z' autosuggest-accept  # Shift+Tab to accept suggestion
-
-# Syntax highlighting — brew location or apt location (must be near the end)
-if [ -f "${_BREW_PREFIX:-}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]; then
-  source "$_BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-elif [ -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
-  source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fi
 
 #### KEYBINDINGS & COMPLETION ####
 
@@ -131,18 +104,22 @@ bindkey '^I' tcsh_autolist
 #### LOAD YOUR FILES ####
 [ -f ~/.zsh/aliases.zsh ] && source ~/.zsh/aliases.zsh
 [ -f ~/.zsh/functions.zsh ] && source ~/.zsh/functions.zsh
+[ -f "$_SHELL_DIR/http.zsh" ] && source "$_SHELL_DIR/http.zsh"
 
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
+# This machine only. OpenClaw, OpenCode, and anything an installer wants to append.
+[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
 
-
+# Syntax highlighting wants to be sourced after widgets and aliases.
+if [ -f "${_BREW_PREFIX:-}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]; then
+  source "$_BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+elif [ -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
+  source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+fi
 
 [[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
-
 
 # Kiro CLI post block. Keep at the bottom of this file.
 [[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh"
@@ -152,3 +129,6 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 # opencode
 [[ "$_OS" == "mac" ]] && export PATH=/Users/joon/.opencode/bin:$PATH
+
+typeset -U path
+unset _SHELL_DIR

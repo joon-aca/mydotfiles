@@ -18,12 +18,9 @@ if command -v eza >/dev/null 2>&1; then
 fi
 
 if command -v bat >/dev/null 2>&1; then
-  alias cat='bat'
+  # -pp: plain output, no pager, so pipes and scripts behave like cat
+  alias cat='bat -pp'
   alias less='bat --paging=always'
-fi
-
-if command -v rg >/dev/null 2>&1; then
-  alias grep='rg'
 fi
 
 #### DIRECTORY STACK (kept from old) ####
@@ -46,25 +43,12 @@ alias http-patch='curl -s -X PATCH -H "Content-Type: application/json" -d'
 alias http-delete='curl -s -X DELETE -H "Accept: application/json"'
 alias http-head='curl -sI'
 
-#### GIT (kept + normalized) ####
+#### GIT ####
+# Short shortcuts only. The rest live in ~/.gitconfig (`git s`, `git l`, `git cm`, ...).
 alias g='git'
 alias gs='git status'
 alias gd='git diff'
-alias gds='git diff --staged'
 alias gl='git log --oneline --graph --decorate -20'
-alias glog='git log --graph --decorate --stat --format="%C(yellow)%h%C(reset) %C(cyan)%ad%C(reset) %C(bold)%s%C(reset) %C(dim)(%an)%C(reset)" --date=short'
-alias ga='git add'
-alias gaa='git add .'
-alias gc='git commit'
-alias gca='git commit --amend'
-alias gp='git push'
-alias gpl='git pull'
-alias gb='git branch'
-alias gco='git checkout'
-
-# Your old “diff stat paged” helpers (kept)
-alias gdst='git diff --stat --color=always | less -R -X'
-alias gdst-c='git diff --cached --stat --color=always | less -R -X'
 
 #### PROJECT SHORTCUTS (kept from old) ####
 alias dev='cd ~/dev'
@@ -81,8 +65,12 @@ alias week='date +%V'
 # reload - Restart the shell
 alias reload="exec ${SHELL} -l"
 
-# rehash - Re-source .zshrc in the current shell
-alias rehash='source ~/.zshrc'
+# rehash - Re-source the current shell's rc
+if [ -n "${ZSH_VERSION:-}" ]; then
+  alias rehash='source ~/.zshrc'
+else
+  alias rehash='source ~/.bashrc'
+fi
 
 #### OS-SPECIFIC UTILITIES ####
 

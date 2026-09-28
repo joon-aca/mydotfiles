@@ -60,9 +60,6 @@ install_mac() {
   # fzf key bindings
   "$(brew --prefix)/opt/fzf/install" --all --no-bash --no-fish --no-update-rc
 
-  # Git credential helper
-  git config --global credential.helper osxkeychain
-
   # iTerm2 Dynamic Profiles: symlink each profile JSON (macOS only)
   mkdir -p "$HOME/Library/Application Support/iTerm2/DynamicProfiles"
   for profile in "$DOTFILES/iterm/DynamicProfiles/"*.json; do
@@ -174,27 +171,94 @@ install_linux() {
   fi
 
 
-  # Git credential helper
-  git config --global credential.helper store
+}
+
+# ─── Per-machine git config (never written into the symlinked ~/.gitconfig) ──
+write_git_local() {
+  local file="$HOME/.config/git/config.local"
+  if [ -f "$file" ]; then
+    info "Git local config already present: $file"
+    return
+  fi
+  mkdir -p "$HOME/.config/git"
+  case "$OS" in
+    Darwin)
+      cat >"$file" <<'EOF'
+# Per-machine git config. Not in the dotfiles repo.
+[credential]
+	helper =
+	helper = osxkeychain
+[credential "https://github.com"]
+	helper =
+	helper = !gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !gh auth git-credential
+EOF
+      ;;
+    Linux)
+      cat >"$file" <<'EOF'
+# Per-machine git config. Not in the dotfiles repo.
+[credential]
+	helper =
+	helper = cache --timeout=28800
+[credential "https://github.com"]
+	helper =
+	helper = !gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !gh auth git-credential
+EOF
+      ;;
+  esac
+  info "Wrote $file"
+}
+
+# Install a global npm CLI into the user prefix. Never sudo.
+install_npm_global() {
+  local pkg="$1" bin="$2"
+  if command -v "$bin" >/dev/null 2>&1; then
+    return
+  fi
+  info "Installing $pkg..."
+  npm install -g "$pkg"
 }
 
 # ─── Common installs (both platforms) ────────────────
 install_common() {
-  # Ensure ~/.local/bin is on PATH
+  # Ensure ~/.local/bin is on PATH (Cursor CLI and user npm bins land here)
   if [ -d "$HOME/.local/bin" ]; then
     export PATH="$HOME/.local/bin:$PATH"
   fi
 
-  # AI CLI tools
+  # Cursor CLI (agent / cursor-agent). Official installer; skips shell-rc edits
+  # when ~/.local/bin is already on PATH.
+  if command -v agent >/dev/null 2>&1; then
+    info "Cursor CLI already installed"
+  else
+    info "Installing Cursor CLI..."
+    curl -fsS https://cursor.com/install | bash
+  fi
+
   info "Installing AI CLI tools..."
 
-  # Claude Code, Codex & Gemini — require system Node
-  if command -v npm &>/dev/null; then
-    sudo npm install -g @anthropic-ai/claude-code
-    sudo npm install -g @openai/codex
-    sudo npm install -g @google/gemini-cli
-  else
-    warn "npm not found — skipping AI CLI tools install"
+  if ! command -v npm >/dev/null 2>&1; then
+    warn "npm not found — skipping Claude Code and Codex"
+    return
+  fi
+
+  local npm_prefix
+  npm_prefix="$(npm config get prefix)"
+  if [ ! -w "$npm_prefix" ] && [ ! -w "$npm_prefix/lib" ]; then
+    warn "npm prefix $npm_prefix is not writable — skipping global npm installs"
+    return
+  fi
+
+  install_npm_global "@anthropic-ai/claude-code" claude
+  install_npm_global "@openai/codex" codex
+  # macOS gets gemini-cli from the Brewfile. Linux does not.
+  if [ "$OS" != "Darwin" ]; then
+    install_npm_global "@google/gemini-cli" gemini
   fi
 }
 
@@ -221,6 +285,8 @@ setup_home() {
     info "Setting zsh as default shell..."
     sudo chsh -s "$(which zsh)" "$(whoami)"
   fi
+
+  write_git_local
 
   info "Done! Run 'exec zsh' or open a new terminal."
 }

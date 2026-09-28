@@ -27,9 +27,9 @@ This dotfiles repo configures a developer workstation optimized for:
 | Modern CLI Replacements | bat, eza, ripgrep, fd, dust, procs, git-delta               |
 | Monitoring              | btop, htop, asitop (macOS only)                             |
 | Dev & Editing           | git, gh, tmux, neovim, emacs, jq, yq                        |
-| Networking              | httpie, wget, nmap                                          |
-| Runtimes                | fnm, pipx, watchman                                         |
-| AI / Productivity       | claude-code, codex, gemini-cli, mlx-lm (macOS)              |
+| Networking              | curl, wget, nmap                                            |
+| Runtimes                | node, pipx, watchman                                        |
+| AI / Productivity       | cursor agent, claude-code, codex, gemini-cli, mlx-lm (macOS) |
 | Utilities               | pv, watch, stress-ng                                        |
 | Fonts                   | JetBrains Mono Nerd Font                                    |
 
@@ -108,7 +108,10 @@ Great for debugging load, heat, and performance behavior.
 
 ## 🤖 AI & Productivity
 
-* **Claude Code** — primary AI coding assistant (install via npm)
+* **Cursor CLI** — terminal agent (`agent`). Installed by bootstrap:
+  `curl https://cursor.com/install -fsS | bash`
+
+* **Claude Code** — primary AI coding assistant (install via npm, no sudo)
   `npm install -g @anthropic-ai/claude-code`
   Your go-to for daily development, codebase understanding, refactoring
 
@@ -133,7 +136,7 @@ git clone git@github.com:joon-aca/mydotfiles.git ~/.mydotfiles
 exec zsh
 ```
 
-The bootstrap script handles everything: package installation, config symlinking, shell change, and AI CLI tools. See `bootstrap.sh` for details.
+The bootstrap script handles everything: package installation, config symlinking, shell change, Cursor CLI, and the other AI CLI tools. See `bootstrap.sh` for details.
 
 ### 🔐 SSH identity — provisioned separately
 
@@ -148,7 +151,7 @@ git clone git@github.com:joon-aca/macos-ssh-vault.git ~/.macos-ssh-vault
 
 This is macOS-only. Linux servers don't get the vault — they only need `mydotfiles`.
 
-Claude Code is installed with a repo-managed global config. `bootstrap.sh` runs [`claude/install-claude.sh`](/Users/joon/mydotfiles/claude/install-claude.sh), which:
+Claude Code is installed with a repo-managed global config. `bootstrap.sh` runs [`claude/install-claude.sh`](claude/install-claude.sh), which:
 
 * symlinks the compound Bash approval hook into `~/.claude/scripts/`
 * generates `~/.claude/settings.json` from repo-managed base + OS overlay + `~/.claude/settings.local.json`
@@ -194,10 +197,10 @@ model and the reasoning behind it: `scripts/limited-deploy-user.md`.
 
 **Modern command replacements**
 
-* `ls` → eza
-* `cat` → bat
-* `grep` → ripgrep
-* `find` → fd
+* `ls` is eza (icons, git status)
+* `cat` is `bat -pp` (plain output, so pipes still work)
+* `rg` and `fd` are on PATH under their own names
+* `search -g '*.py' pattern` — recursive search with a glob
 
 **Git aliases (see `.gitconfig`)**
 
@@ -212,6 +215,7 @@ model and the reasoning behind it: `scripts/limited-deploy-user.md`.
 * `~/.config/starship.toml` — prompt config
 * `~/.zsh/aliases.zsh` — personal aliases
 * `.zshrc` — fzf behavior, preview pane, and styles
+* `~/.zshrc.local` — this machine only (OpenClaw, OpenCode). Not in git.
 
 ---
 
@@ -228,7 +232,7 @@ brew bundle dump --force
 sudo apt update && sudo apt upgrade -y
 ```
 
-Configs are symlinked — edit in `~/mydotfiles`, changes apply immediately (restart shell or `reload`).
+Configs are symlinked — edit in `~/.mydotfiles`, changes apply immediately (restart shell or `reload`).
 
 ---
 

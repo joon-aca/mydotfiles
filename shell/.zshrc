@@ -58,19 +58,21 @@ if command -v zoxide >/dev/null 2>&1; then
 fi
 
 # fzf - fuzzy finder
+# FZF_CTRL_T_COMMAND= (empty, scoped to this source only) tells fzf's own
+# script to skip binding ctrl-t at all, rather than binding it and having
+# us undo it below. The real FZF_CTRL_T_COMMAND (set in common.sh) is
+# untouched outside this line, so the widget's search command still works.
 if [ -f ~/.fzf.zsh ]; then
-  source ~/.fzf.zsh
+  FZF_CTRL_T_COMMAND= source ~/.fzf.zsh
 elif [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]; then
-  source /usr/share/doc/fzf/examples/key-bindings.zsh
+  FZF_CTRL_T_COMMAND= source /usr/share/doc/fzf/examples/key-bindings.zsh
   [ -f /usr/share/doc/fzf/examples/completion.zsh ] && source /usr/share/doc/fzf/examples/completion.zsh
 fi
 
-# fzf steals ctrl-t for file search, clobbering the standard emacs
-# transpose-chars binding. Restore ctrl-t and move file search to ctrl-q,
-# an obscure default (push-line) nobody uses.
-if (( $+widgets[fzf-file-widget] )); then
-  bindkey '^T' transpose-chars
-  bindkey '^Q' fzf-file-widget
+# fzf skipped its binding above, so register the widget and bind it here.
+if (( $+functions[fzf-file-widget] )); then
+  zle -N fzf-file-widget
+  bindkey '^X^F' fzf-file-widget
 fi
 
 # Starship prompt. Syntax highlighting is sourced later, and wants to stay near the end.

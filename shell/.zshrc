@@ -85,14 +85,6 @@ elif [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]; then
   [ -f /usr/share/doc/fzf/examples/completion.zsh ] && source /usr/share/doc/fzf/examples/completion.zsh
 fi
 
-# fzf steals ctrl-t for file search, clobbering the standard emacs
-# transpose-chars binding. Restore ctrl-t and move file search to ctrl-x
-# ctrl-f, a chord under the existing ctrl-x prefix map.
-if (( $+widgets[fzf-file-widget] )); then
-  bindkey '^T' transpose-chars
-  bindkey '^X^F' fzf-file-widget
-fi
-
 # Starship prompt - must be at the end of the file
 command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
 

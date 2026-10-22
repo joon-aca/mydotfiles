@@ -145,9 +145,9 @@
       "Bash(git config --list)",
       "Bash(git config --list:*)",
       "Bash(* --help)",
-      "Bash(* --help:*)",
+      "Bash(* --help *)",
       "Bash(* --version)",
-      "Bash(* --version:*)"
+      "Bash(* --version *)"
     ],
     "deny": []
   },

@@ -5,6 +5,7 @@
 
 ## Tool usage
 - NEVER use the `-E` flag with `rg`. Extended regex is the default.
+- If a Bash command is "blocked by the permission check", retry its steps as separate commands (split `&&`/`;` chains, use `-C <dir>` or absolute paths instead of `cd ... &&`) before asking me. Only stop and ask if a single step is still refused on its own.
 
 ## Code quality
 - Focus on finding and fixing ROOT CAUSES, not symptoms. No hacky patches. No guesses.

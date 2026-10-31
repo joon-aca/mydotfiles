@@ -53,7 +53,10 @@ if [ -f "$HOME/.cargo/env" ]; then
   . "$HOME/.cargo/env"
 fi
 
-export CDPATH=".:$HOME/dev:$HOME/dev/github:/opt:/opt/stacks"
+# Not exported, and un-exported if a parent shell exported it: cd reads it
+# either way, and scripts that inherit it get a printing `cd` and break.
+CDPATH=".:$HOME/dev:$HOME/dev/github:/opt:/opt/stacks"
+typeset +x CDPATH
 
 export CLAUDE_MODEL="${CLAUDE_MODEL:-claude-opus-4-6}"
 

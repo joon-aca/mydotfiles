@@ -16,9 +16,9 @@
   },
   "permissions": {
     "allow": [
-      "Read(*)",
-      "Glob(*)",
-      "Grep(*)",
+      "Read",
+      "Glob",
+      "Grep",
       "Bash(pwd)",
       "Bash(cd:*)",
       "Bash(ls)",

@@ -13,6 +13,7 @@ xcode-select --install
 # Step 1 — base dev environment
 git clone https://github.com/joon-aca/mydotfiles.git ~/.mydotfiles
 ~/.mydotfiles/bootstrap.sh
+# also installs Cursor CLI: curl https://cursor.com/install -fsS | bash
 
 # Step 2 — SSH identity (config + keys, from encrypted vault)
 git clone git@github.com:joon-aca/macos-ssh-vault.git ~/.macos-ssh-vault

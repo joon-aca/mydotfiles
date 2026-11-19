@@ -27,9 +27,9 @@ This dotfiles repo configures a developer workstation optimized for:
 | Modern CLI Replacements | bat, eza, ripgrep, fd, dust, procs, git-delta               |
 | Monitoring              | btop, htop, asitop (macOS only)                             |
 | Dev & Editing           | git, gh, tmux, neovim, emacs, jq, yq                        |
-| Networking              | httpie, wget, nmap                                          |
-| Runtimes                | fnm, pipx, watchman                                         |
-| AI / Productivity       | claude-code, codex, gemini-cli, mlx-lm (macOS)              |
+| Networking              | curl, wget, nmap                                            |
+| Runtimes                | node, pipx, watchman                                        |
+| AI / Productivity       | cursor agent, claude-code, codex, gemini-cli, mlx-lm (macOS) |
 | Utilities               | pv, watch, stress-ng                                        |
 | Fonts                   | JetBrains Mono Nerd Font                                    |
 
@@ -108,7 +108,10 @@ Great for debugging load, heat, and performance behavior.
 
 ## 🤖 AI & Productivity
 
-* **Claude Code** — primary AI coding assistant (install via npm)
+* **Cursor CLI** — terminal agent (`agent`). Installed by bootstrap:
+  `curl https://cursor.com/install -fsS | bash`
+
+* **Claude Code** — primary AI coding assistant (install via npm, no sudo)
   `npm install -g @anthropic-ai/claude-code`
   Your go-to for daily development, codebase understanding, refactoring
 
@@ -133,7 +136,7 @@ git clone git@github.com:joon-aca/mydotfiles.git ~/.mydotfiles
 exec zsh
 ```
 
-The bootstrap script handles everything: package installation, config symlinking, shell change, and AI CLI tools. See `bootstrap.sh` for details.
+The bootstrap script handles everything: package installation, config symlinking, shell change, Cursor CLI, and the other AI CLI tools. See `bootstrap.sh` for details.
 
 ### 🔐 SSH identity — provisioned separately
 
@@ -148,7 +151,7 @@ git clone git@github.com:joon-aca/macos-ssh-vault.git ~/.macos-ssh-vault
 
 This is macOS-only. Linux servers don't get the vault — they only need `mydotfiles`.
 
-Claude Code is installed with a repo-managed global config. `bootstrap.sh` runs [`claude/install-claude.sh`](/Users/joon/mydotfiles/claude/install-claude.sh), which:
+Claude Code is installed with a repo-managed global config. `bootstrap.sh` runs [`claude/install-claude.sh`](claude/install-claude.sh), which:
 
 * symlinks the compound Bash approval hook into `~/.claude/scripts/`
 * generates `~/.claude/settings.json` from repo-managed base + OS overlay + `~/.claude/settings.local.json`
@@ -158,13 +161,29 @@ The default Claude policy is intentionally stingy: it auto-approves clearly read
 
 ### Server setup (optional)
 
-For servers that need Docker, Caddy, and Dockge:
+Two layers — baseline infra applies to any server, the shared-deploy layer
+only to boxes multiple people deploy to (e.g. lando, vader, leia).
+
+**Baseline** — Docker, Caddy, Dockge, swap, Node.js:
 
 ```bash
 ./server-setup.sh
 ```
 
 This installs Docker (official apt repo), Caddy (official apt repo), sets up `/opt/stacks` with setgid docker, and deploys Dockge to `/opt/dockge`.
+
+**Shared deploy machine** — only if this server will have multiple deploy
+accounts in the `docker` group. Installs the `docker-escape-watch` backstop
+(logs the classic docker-group → host-root escape pattern if anyone ever
+hits it — detection, not prevention):
+
+```bash
+./scripts/shared-deploy-server-setup.sh
+```
+
+Then provision each account with `./scripts/oracle-vm-setup.sh <username> deploy`
+(vs. plain `admin` role for full-sudo accounts like yourself). Full access
+model and the reasoning behind it: `scripts/limited-deploy-user.md`.
 
 ---
 
@@ -178,10 +197,10 @@ This installs Docker (official apt repo), Caddy (official apt repo), sets up `/o
 
 **Modern command replacements**
 
-* `ls` → eza
-* `cat` → bat
-* `grep` → ripgrep
-* `find` → fd
+* `ls` is eza (icons, git status)
+* `cat` is `bat -pp` (plain output, so pipes still work)
+* `rg` and `fd` are on PATH under their own names
+* `search -g '*.py' pattern` — recursive search with a glob
 
 **Git aliases (see `.gitconfig`)**
 
@@ -196,6 +215,7 @@ This installs Docker (official apt repo), Caddy (official apt repo), sets up `/o
 * `~/.config/starship.toml` — prompt config
 * `~/.zsh/aliases.zsh` — personal aliases
 * `.zshrc` — fzf behavior, preview pane, and styles
+* `~/.zshrc.local` — this machine only (OpenClaw, OpenCode). Not in git.
 
 ---
 
@@ -212,7 +232,7 @@ brew bundle dump --force
 sudo apt update && sudo apt upgrade -y
 ```
 
-Configs are symlinked — edit in `~/mydotfiles`, changes apply immediately (restart shell or `reload`).
+Configs are symlinked — edit in `~/.mydotfiles`, changes apply immediately (restart shell or `reload`).
 
 ---
 

@@ -9,6 +9,8 @@ CLAUDE_BACKUP_DIR="$CLAUDE_DST_DIR/backup"
 BASE_JSON="$CLAUDE_SRC_DIR/settings.base.json"
 LOCAL_JSON="$CLAUDE_DST_DIR/settings.local.json"
 TARGET_JSON="$CLAUDE_DST_DIR/settings.json"
+AGENTS_SRC="$DOTFILES_DIR/AGENTS.md"
+AGENTS_DST="$CLAUDE_DST_DIR/AGENTS.md"
 HOOK_SRC="$CLAUDE_SRC_DIR/scripts/approve-compound-bash.sh"
 HOOK_DST="$CLAUDE_SCRIPTS_DST/approve-compound-bash.sh"
 
@@ -65,12 +67,14 @@ dedupe_append() {
 main() {
   require_command jq
   require_file "$BASE_JSON"
+  require_file "$AGENTS_SRC"
   require_file "$HOOK_SRC"
 
   mkdir -p "$CLAUDE_DST_DIR" "$CLAUDE_SCRIPTS_DST" "$CLAUDE_BACKUP_DIR"
   chmod +x "$HOOK_SRC"
   ln -sfn "$HOOK_SRC" "$HOOK_DST"
   ln -sf "$CLAUDE_SRC_DIR/CLAUDE.md" "$CLAUDE_DST_DIR/CLAUDE.md"
+  ln -sf "$AGENTS_SRC" "$AGENTS_DST"
 
   local os_json=""
   case "$(uname -s)" in
@@ -105,6 +109,7 @@ main() {
 
   info "Installed Claude settings to $TARGET_JSON"
   info "Linked CLAUDE.md at $CLAUDE_DST_DIR/CLAUDE.md"
+  info "Linked AGENTS.md at $AGENTS_DST"
   info "Linked hook script at $HOOK_DST"
   info "Local per-machine overrides can live in $LOCAL_JSON"
 }

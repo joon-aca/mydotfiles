@@ -16,9 +16,9 @@
   },
   "permissions": {
     "allow": [
-      "Read(*)",
-      "Glob(*)",
-      "Grep(*)",
+      "Read",
+      "Glob",
+      "Grep",
       "Bash(pwd)",
       "Bash(cd:*)",
       "Bash(ls)",
@@ -145,14 +145,14 @@
       "Bash(git config --list)",
       "Bash(git config --list:*)",
       "Bash(* --help)",
-      "Bash(* --help:*)",
+      "Bash(* --help *)",
       "Bash(* --version)",
-      "Bash(* --version:*)"
+      "Bash(* --version *)"
     ],
     "deny": []
   },
   "includeCoAuthoredBy": false,
-  "model": "opus",
+  "model": "claude-opus-4-6",
   "enabledPlugins": {
     "rust-analyzer-lsp@claude-plugins-official": true,
     "swift-lsp@claude-plugins-official": true

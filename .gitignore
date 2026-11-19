@@ -9,7 +9,10 @@
 .env.*
 *~
 
-# Private settings (moved to ~/mysettings)
+# Private settings live outside this repo:
+#   SSH keys and config: macos-ssh-vault
+#   this machine's shell: ~/.zshrc.local
+#   this machine's git credentials: ~/.config/git/config.local
 iterm2/
 ssh/
 claude/.claude.json

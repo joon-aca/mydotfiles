@@ -36,17 +36,17 @@ brew "watch"                         # Execute command periodically
 brew "pv"                            # Progress viewer for pipes
 
 #### NETWORK TOOLS ####
-brew "httpie"                        # User-friendly HTTP client
 brew "wget"                          # Download utility
 brew "nmap"                          # Network scanner
 
 #### DEVELOPMENT RUNTIMES ####
-brew "fnm"                           # Fast Node Manager
+brew "node"                          # System Node (projects here don't need a version manager)
 brew "pipx"                          # Install Python CLI apps in isolation
 brew "watchman"                      # File watching service
 
 #### AI & PRODUCTIVITY ####
-# Note: claude-code is the primary AI CLI (install via: npm install -g @anthropic-ai/claude-code)
+# Claude Code and Codex: npm, installed by bootstrap.sh (no sudo).
+# Cursor CLI: curl https://cursor.com/install -fsS | bash  (also bootstrap.sh)
 brew "gemini-cli"                    # Gemini CLI - backup for intractable issues
 # Note: mlx-lm for local LLMs (install via: pipx install mlx-lm)
 # Replaces ollama due to header bug in macOS 26.2

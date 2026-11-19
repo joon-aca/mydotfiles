@@ -2,9 +2,9 @@
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "allow": [
-      "Read(*)",
-      "Glob(*)",
-      "Grep(*)",
+      "Read",
+      "Glob",
+      "Grep",
       "Bash(pwd)",
       "Bash(cd *)",
       "Bash(ls)",
@@ -128,6 +128,8 @@
       "Bash(* -v *)"
     ]
   },
-  "model": "opus",
-  "effortLevel": "medium"
+  "model": "claude-opus-4-6",
+  "effortLevel": "medium",
+  "agentPushNotifEnabled": true,
+  "tui": "fullscreen"
 }

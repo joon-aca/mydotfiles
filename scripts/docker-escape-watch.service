@@ -1,0 +1,15 @@
+[Unit]
+Description=Backstop watcher for docker-group host-root escape attempts
+After=docker.service
+Requires=docker.service
+
+[Service]
+ExecStart=/usr/local/sbin/docker-escape-watch
+Restart=always
+RestartSec=5
+Nice=19
+IOSchedulingClass=idle
+MemoryMax=50M
+
+[Install]
+WantedBy=multi-user.target

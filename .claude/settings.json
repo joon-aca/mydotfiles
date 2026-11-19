@@ -128,7 +128,6 @@
       "Bash(* -v *)"
     ]
   },
-  "model": "claude-opus-4-6",
   "effortLevel": "medium",
   "agentPushNotifEnabled": true,
   "tui": "fullscreen"

@@ -93,6 +93,11 @@ _set_title_to_project() {
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd _set_title_to_project
 
+# A running tmux server never rereads its config on its own, so tmux settings this shell
+# relies on (set-titles above) would go stale after a pull. Reload it whenever zshrc loads
+# under tmux; the config is all plain `set`s, so reapplying it is idempotent.
+[[ -n "$TMUX" && -f "${HOME}/.tmux.conf" ]] && tmux source-file "${HOME}/.tmux.conf"
+
 #### ZSH PLUGINS ####
 
 # Autosuggestions — brew location or apt location

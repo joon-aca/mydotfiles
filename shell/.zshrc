@@ -80,6 +80,19 @@ if command -v starship >/dev/null 2>&1; then
   eval "$(starship init zsh)"
 fi
 
+# Title bar: the project folder (git repo root, else cwd). Under tmux this sets the pane
+# title, which tmux copies to the terminal window title when set-titles is on.
+# Claude Code overwrites the pane title with its session summary while it runs, so turn that off
+# here; otherwise the shell title only shows at the prompt.
+export CLAUDE_CODE_DISABLE_TERMINAL_TITLE=1
+_set_title_to_project() {
+  local root
+  root="$(git rev-parse --show-toplevel 2>/dev/null)" || root="$PWD"
+  printf '\e]0;%s\a' "${root:t}"
+}
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd _set_title_to_project
+
 #### ZSH PLUGINS ####
 
 # Autosuggestions — brew location or apt location

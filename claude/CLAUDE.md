@@ -8,6 +8,7 @@ These apply to Claude Code, Codex, Cursor, and any other agent working in this r
 
 ## Tool usage
 - NEVER use the `-E` flag with `rg`. Extended regex is the default.
+- Use pnpm, not npm (`pnpm exec`, not `npx`). Avoid script names that collide with pnpm built-ins such as `setup` and `deploy`.
 
 ## Code quality
 - Focus on finding and fixing ROOT CAUSES, not symptoms. No hacky patches. No guesses.
@@ -21,6 +22,7 @@ These apply to Claude Code, Codex, Cursor, and any other agent working in this r
 - One step is the target. The primary action should be a single command (`make ipa`, `make deploy`), not a sequence I have to recall.
 - Fold prerequisites INTO that command rather than documenting them. Don't tell me to run something first — run it.
 - The bare/default invocation should print the one or two commands that matter, primary first.
+- Every project gets a Makefile as the front door for common steps (dev, check, test, deploy). Targets wrap the package-manager scripts rather than duplicating them, fold in prerequisites (install when the lockfile changes, first-run setup), and bare `make` prints the help.
 - Put guards in the tool, not in warnings: refuse bad states, auto-revert what you auto-applied, make the unsafe thing impossible rather than documented.
 - The safe path must be the default path. Secrets never land in committed files.
 - If a step genuinely can't be collapsed, say so plainly and make the remainder impossible to get wrong.

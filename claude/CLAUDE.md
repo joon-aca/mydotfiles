@@ -9,6 +9,7 @@ These apply to Claude Code, Codex, Cursor, and any other agent working in this r
 ## Tool usage
 - NEVER use the `-E` flag with `rg`. Extended regex is the default.
 - Use pnpm, not npm (`pnpm exec`, not `npx`). Avoid script names that collide with pnpm built-ins such as `setup` and `deploy`.
+- If a Bash command is "blocked by the permission check", retry its steps as separate commands (split `&&`/`;` chains, use `-C <dir>` or absolute paths instead of `cd ... &&`) before asking me. Only stop and ask if a single step is still refused on its own.
 
 ## Code quality
 - Focus on finding and fixing ROOT CAUSES, not symptoms. No hacky patches. No guesses.
